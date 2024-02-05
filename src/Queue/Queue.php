@@ -1,6 +1,7 @@
 <?php
 namespace Mach3queue\Queue;
 
+use Illuminate\Support\Carbon;
 use Mach3queue\Action\SetupDatabase;
 use Mach3queue\Job\Job;
 
@@ -40,14 +41,14 @@ class Queue
         $entry = new Job;
         $entry->queue = $this->queue;
         $entry->payload = serialize($job);
-        $entry->added_dt = gmdate('Y-m-d H:i:s');
-        $entry->send_dt = gmdate('Y-m-d H:i:s', strtotime('now +'.$delay.' seconds'));
+        $entry->added_dt = Carbon::now();
+        $entry->send_dt = Carbon::now()->addSeconds($delay);
         $entry->priority = $priority;
         $entry->is_reserved = 0;
         $entry->reserved_dt = null;
         $entry->is_buried = 0;
         $entry->attempts = 0;
-        $entry->time_to_retry_dt = gmdate('Y-m-d H:i:s', strtotime('now +'.$time_to_retry.' seconds'));
+        $entry->time_to_retry_dt = Carbon::now()->addSeconds($time_to_retry);
         $entry->is_complete = 0;
         $entry->save();
 
@@ -65,7 +66,7 @@ class Queue
     {
         $job = Job::find($id);
         $job->is_buried = 1;
-        $job->buried_dt = gmdate('Y-m-d H:i:s');
+        $job->buried_dt = Carbon::now();
         $job->is_reserved = 0;
         $job->reserved_dt = null;
         $job->message = $message;
@@ -75,21 +76,21 @@ class Queue
     public function getNextJob(): ?Job
     {
         $job = Job::where('queue', $this->queue)
-            ->where('send_dt', '<=', gmdate('Y-m-d H:i:s'))
+            ->where('send_dt', '<=', Carbon::now())
             ->where('is_buried', 0)
             ->where('is_complete', 0)
             ->where(function ($query) {
                 $query->where('is_reserved', 0)
                     ->orWhere(function ($query) {
                         $query->where('is_reserved', 1)
-                            ->where('reserved_dt', '<=', gmdate('Y-m-d H:i:s', strtotime('now -5 minutes')));
+                            ->where('reserved_dt', '<=', Carbon::now()->subMinutes(5));
                     });
             })
             ->where(function ($query) {
                 $query->where('attempts', 0)
                     ->orWhere(function ($query) {
                         $query->where('attempts', '>=', 1)
-                            ->where('time_to_retry_dt', '<=', gmdate('Y-m-d H:i:s'));
+                            ->where('time_to_retry_dt', '<=', Carbon::now());
                     });
             })
             ->orderBy('priority')
@@ -97,7 +98,7 @@ class Queue
 
         if ($job) {
             $job->is_reserved = 1;
-            $job->reserved_dt = gmdate('Y-m-d H:i:s');
+            $job->reserved_dt = Carbon::now();
             $job->attempts = $job->attempts + 1;
             $job->save();
         }
