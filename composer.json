@@ -1,0 +1,18 @@
+{
+    "name": "mach3builders/mach3queue",
+    "description": "A php queue system",
+    "autoload": {
+        "psr-4": {
+            "Mach3queue\\": "src/"
+        }
+    },
+    "require": {
+        "illuminate/database": "^10.43"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5"
+    },
+    "bin": [
+        "mach3worker"
+    ]
+}
