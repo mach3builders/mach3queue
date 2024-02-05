@@ -7,7 +7,14 @@ use Mach3queue\Worker\Worker;
 use Mach3queue\Worker\WorkerActions;
 use Mach3queue\Worker\WorkerOptions;
 
-$config = '../../config.php';
+$file = __DIR__ . '/../../autoload.php';
+
+if (!(file_exists($file) && include $file)) {
+    fwrite(STDERR, 'Install dependencies using Composer.'.PHP_EOL);
+    exit(1);
+}
+
+$config = require __DIR__.'/../../../config.php';
 
 $command = new Command($argv);
 $queue = new Queue;
@@ -20,7 +27,7 @@ $queue->setConnection([
 ]);
 
 $worker = new Worker(
-    queue: $queue->on($command->getQueue()), 
+    queue: $queue->on($command->getQueue()),
     timeout: $command->getTimeout(),
     actions: new WorkerActions,
     options: new WorkerOptions(
