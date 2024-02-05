@@ -4,17 +4,17 @@ namespace Mach3queue\Action;
 
 use Illuminate\Database\Capsule\Manager as Database;
 
-class SetupDatabase implements Action
+class SetupDatabase
 {
-    public function execute(...$args): void
+    public function execute($config): void
     {
         $database = new Database;
         $database->addConnection([
-            'driver' => $args['driver'],
-            'host' => $args['host'],
-            'database' => $args['database'],
-            'username' => $args['username'],
-            'password' => $args['password'],
+            'driver' => $config['driver'],
+            'host' => $config['host'],
+            'database' => $config['database'],
+            'username' => $config['username'],
+            'password' => $config['password'],
         ]);
         $database->setAsGlobal();
         $database->bootEloquent();
@@ -34,7 +34,7 @@ class SetupDatabase implements Action
             $table->dateTime('added_dt');
             $table->dateTime('send_dt');
             $table->integer('priority')->default(0);
-            $table->boolean('is_reserved');
+            $table->boolean('is_reserved')->default(0);
             $table->dateTime('reserved_dt')->nullable();
             $table->boolean('is_buried')->default(0);
             $table->dateTime('buried_dt')->nullable();

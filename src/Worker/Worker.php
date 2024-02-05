@@ -39,7 +39,7 @@ class Worker
 
             $timeout_handler = $this->timeoutHandler($job);
             $async_signal->registerTimeoutHandlerForJob($timeout_handler);
-
+            
             $this->runJob($job);
 
             $async_signal->resetTimeoutHandler();
@@ -78,9 +78,9 @@ class Worker
     private function runJob(Job $job): void
     {
         try {
-            $job->run();
+            $this->actions->runJob($job);
         } catch(\Exception $e) {
-            $this->queue->buryJob($job->id, $e->getMessage());
+            $this->actions->buryJob($job->id, $e->getMessage());
         }
     }
 }

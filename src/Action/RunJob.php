@@ -4,10 +4,11 @@ namespace Mach3queue\Action;
 
 use Mach3queue\Job\Job;
 
-class TimeoutJob
+class RunJob
 {
     public function execute(Job $job): void
     {
-        // $job->timedOut();
+        $action = unserialize($job->payload);
+        $action->handle();
     }
 }

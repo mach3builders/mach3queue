@@ -1,5 +1,6 @@
 <?php
 
+use Mach3queue\Action\RunJob;
 use Mach3queue\Job\Job;
 use Mach3queue\Job\Status;
 use Mach3queue\Queue\FakeEmptyQueueable;
@@ -11,7 +12,8 @@ class JobTest extends TestCase
     {
         $job = new Job;
         $job->payload = serialize(new FakeEmptyQueueable);
-        $job->run();
+
+        (new RunJob)->execute($job);
 
         $this->assertTrue(true);
     }

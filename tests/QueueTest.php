@@ -1,5 +1,6 @@
 <?php
 
+use Mach3queue\Action\BuryJob;
 use Mach3queue\Queue\FakeEmptyQueueable;
 use Mach3queue\Queue\QueueManager as Queue;
 use PHPUnit\Framework\TestCase;
@@ -22,9 +23,9 @@ class QueueTest extends TestCase
 
     public function test_can_add_and_get_job(): void
     {
-        $job_id = Queue::addJob(new FakeEmptyQueueable);
+        $job = Queue::addJob(new FakeEmptyQueueable);
 
-        $this->assertNotEmpty(Queue::get($job_id));
+        $this->assertNotEmpty($job);
     }
 
     public function test_can_get_next_job(): void
@@ -36,22 +37,22 @@ class QueueTest extends TestCase
 
     public function test_can_delete_job(): void
     {
-        $job_id = Queue::addJob(new FakeEmptyQueueable);
+        $job = Queue::addJob(new FakeEmptyQueueable);
 
-        Queue::deleteJob($job_id);
+        Queue::deleteJob($job->id);
 
         $this->assertEmpty(Queue::getNextJob());
     }
 
     public function test_can_prioritize_job(): void
     {
-        $job_id_1 = Queue::addJob(new FakeEmptyQueueable, 0, 10);
-        $job_id_2 = Queue::addJob(new FakeEmptyQueueable, 0, 20);
-        $job_id_3 = Queue::addJob(new FakeEmptyQueueable, 0, 30);
+        $job_1 = Queue::addJob(new FakeEmptyQueueable, 0, 10);
+        $job_2 = Queue::addJob(new FakeEmptyQueueable, 0, 20);
+        $job_3 = Queue::addJob(new FakeEmptyQueueable, 0, 30);
 
-        $this->assertEquals($job_id_1, Queue::getNextJob()->id);
-        $this->assertEquals($job_id_2, Queue::getNextJob()->id);
-        $this->assertEquals($job_id_3, Queue::getNextJob()->id);
+        $this->assertEquals($job_1->id, Queue::getNextJob()->id);
+        $this->assertEquals($job_2->id, Queue::getNextJob()->id);
+        $this->assertEquals($job_3->id, Queue::getNextJob()->id);
     }
 
     public function test_can_use_specific_queue(): void
@@ -65,11 +66,11 @@ class QueueTest extends TestCase
 
     public function test_can_bury_job(): void
     {
-        $job_id = Queue::addJob(new FakeEmptyQueueable);
-
-        Queue::buryJob($job_id, 'test');
+        $job = Queue::addJob(new FakeEmptyQueueable);
         
-        $job = Queue::get($job_id);
+        (new BuryJob)->execute($job, 'test');
+        
+        $job->refresh();
 
         $this->assertEquals(1, $job->is_buried);
         $this->assertEquals('test', $job->message);

@@ -2,7 +2,7 @@
 
 namespace Mach3queue\Action;
 
-class FakeAction implements Action
+class FakeAction
 {
     public function __construct(private $callback)
     {
