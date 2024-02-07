@@ -2,7 +2,6 @@
 
 namespace Mach3queue\Worker;
 
-use Mach3queue\Action\Action;
 use Mach3queue\Action\BuryJob;
 use Mach3queue\Action\KillWorker;
 use Mach3queue\Action\RunJob;

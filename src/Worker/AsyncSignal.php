@@ -6,16 +6,10 @@ use Mach3queue\Worker\Worker;
 
 class AsyncSignal
 {
-    const EXTENSION_MISSING = 'The pcntl extension is required for Mach3queue to function';
-
     private int $timeout;
 
     public function __construct()
     {
-        if (!extension_loaded('pcntl')) {
-            throw new \RuntimeException(self::EXTENSION_MISSING);
-        }
-
         pcntl_async_signals(true);
     }
 

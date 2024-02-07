@@ -1,8 +1,6 @@
 <?php
 namespace Mach3queue\Queue;
 
-use Mach3queue\Action\AddJob;
-use Mach3queue\Action\ReserveJob;
 use Mach3queue\Action\SetupDatabase;
 use Mach3queue\Job\Job;
 
@@ -10,6 +8,12 @@ class Queue
 {
     const DEFAULT_QUEUE = 'default';
     private string $queue = self::DEFAULT_QUEUE;
+    private QueueActions $actions;
+
+    public function __construct(QueueActions $actions = new QueueActions)
+    {
+        $this->actions = $actions;
+    }
 
     public function setConnection(array $config): void
     {
@@ -29,7 +33,7 @@ class Queue
         int $priority = 1024,
         int $time_to_retry = 60
     ): Job {
-        $new_job = (new AddJob)->execute(
+        $new_job = $this->actions->addJob(
             queue: $this->queue,
             payload: serialize($job),
             delay: $delay,
@@ -52,7 +56,7 @@ class Queue
         $job = Job::nextJobForQueue($this->queue)->first();
 
         if ($job) {
-            (new ReserveJob)->execute(job: $job);
+            $this->actions->reserveJob($job);
         }
 
         $this->resetQueue();

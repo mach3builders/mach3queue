@@ -6,26 +6,9 @@ use Mach3queue\Queue\QueueManager as Queue;
 use Mach3queue\Worker\Worker;
 use Mach3queue\Worker\WorkerActions;
 use Mach3queue\Worker\WorkerOptions;
-use PHPUnit\Framework\TestCase;
 
-class WorkerTest extends TestCase
-{
-    protected Queue $queue;
-
-    public function setUp(): void {
-		$this->queue = new Queue;
-        $this->queue->setConnection([
-            'driver' => 'sqlite',
-            'host' => 'localhost',
-            'database' => ':memory:',
-            'username' => 'test',
-            'password' => 'test',
-        ]);
-        $this->queue->setAsGlobal();
-	}
-
-    public function test_can_timeout(): void
-    {
+describe('Worker', function () {
+    test('can timeout', function () {
         $job_timer = 3;
         $timeout = 1;
 
@@ -43,6 +26,6 @@ class WorkerTest extends TestCase
         $worker->run();
 
         // check if the session timer is less than the timeout
-        $this->assertTrue($_SESSION["start_time"] - $_SESSION["start_end"] < $job_timer);
-    }
-}
+        expect($_SESSION["start_time"] - $_SESSION["start_end"])->toBeLessThan($job_timer);
+    });
+});

@@ -37,21 +37,15 @@ class Worker
                 continue;
             }
 
-            $timeout_handler = $this->timeoutHandler($job);
-            $async_signal->registerTimeoutHandlerForJob($timeout_handler);
+            $async_signal->registerTimeoutHandlerForJob(function() use ($job) {
+                $this->actions->timeoutJob($job);
+                $this->actions->killWorker();
+            });
             
             $this->runJob($job);
 
             $async_signal->resetTimeoutHandler();
         }
-    }
-
-    public function timeoutHandler(Job $job): callable
-    {
-        return function() use ($job) {
-            $this->actions->timeoutJob($job);
-            $this->actions->killWorker();
-        };
     }
 
     public function quit(): void
