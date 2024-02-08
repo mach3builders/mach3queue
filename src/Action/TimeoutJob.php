@@ -8,6 +8,6 @@ class TimeoutJob
 {
     public function execute(Job $job): void
     {
-        // $job->timedOut();
+        (new BuryJob)->execute($job, Job::TIMEOUT_MESSAGE);
     }
 }

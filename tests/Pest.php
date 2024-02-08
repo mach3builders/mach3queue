@@ -24,7 +24,7 @@ uses(TestCase::class)->beforeEach(function () {
         'password' => 'test',
     ]);
     $this->queue->setAsGlobal();
-})->in('Unit');
+})->in('Unit', 'Feature');
 
 /*
 |--------------------------------------------------------------------------

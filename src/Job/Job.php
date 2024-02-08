@@ -9,6 +9,8 @@ use Illuminate\Support\Carbon;
 
 class Job extends Model
 {
+    const TIMEOUT_MESSAGE = 'Job has timed out';
+    
     public function scopeNextJobForQueue(Builder $query, string $queue): void
     {
         $query->where('queue', $queue)

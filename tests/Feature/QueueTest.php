@@ -35,13 +35,13 @@ describe('Queue', function () {
     });
 
     test('can prioritize job', function () {
-        $job_1 = Queue::addJob(new FakeEmptyQueueable, 0, 10);
+        $job_1 = Queue::addJob(new FakeEmptyQueueable, 0, 30);
         $job_2 = Queue::addJob(new FakeEmptyQueueable, 0, 20);
-        $job_3 = Queue::addJob(new FakeEmptyQueueable, 0, 30);
+        $job_3 = Queue::addJob(new FakeEmptyQueueable, 0, 10);
 
-        expect($job_1->id)->toBe(Queue::getNextJob()->id);
-        expect($job_2->id)->toBe(Queue::getNextJob()->id);
         expect($job_3->id)->toBe(Queue::getNextJob()->id);
+        expect($job_2->id)->toBe(Queue::getNextJob()->id);
+        expect($job_1->id)->toBe(Queue::getNextJob()->id);
     });
 
     test('can bury job', function () {
