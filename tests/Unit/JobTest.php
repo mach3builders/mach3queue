@@ -4,6 +4,7 @@ use Mach3queue\Action\RunJob;
 use Mach3queue\Job\Job;
 use Mach3queue\Job\Status;
 use Mach3queue\Queue\FakeEmptyQueueable;
+use Mach3queue\Queue\QueueManager as Queue;
 
 
 describe('Job', function () {

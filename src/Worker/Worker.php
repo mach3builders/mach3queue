@@ -50,6 +50,8 @@ class Worker
 
     public function quit(): void
     {
+        echo "Quitting worker".PHP_EOL;
+        $this->shouldQuit = true;
     }
 
     public function pause(): void

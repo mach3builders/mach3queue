@@ -8,6 +8,7 @@ class Queue
 {
     const DEFAULT_QUEUE = 'default';
     private string $queue = self::DEFAULT_QUEUE;
+    private array $pipelines = [];
     private QueueActions $actions;
 
     public function __construct(QueueActions $actions = new QueueActions)
@@ -23,6 +24,13 @@ class Queue
     public function on(string $queue): static
     {
         $this->queue = $queue;
+
+        return $this;
+    }
+
+    public function  pipelines(array $pipelines): static
+    {
+        $this->pipelines = $pipelines;
 
         return $this;
     }
@@ -53,7 +61,7 @@ class Queue
 
     public function getNextJob(): ?Job
     {
-        $job = Job::nextJobForQueue($this->queue)->first();
+        $job = Job::nextJobForPipeLines($this->getPipelines())->first();
 
         if ($job) {
             $this->actions->reserveJob($job);
@@ -63,6 +71,11 @@ class Queue
         
         return $job;
 	}
+
+    private function getPipelines(): array
+    {
+        return $this->pipelines ?: [$this->queue];
+    }
 
     private function resetQueue(): void
     {

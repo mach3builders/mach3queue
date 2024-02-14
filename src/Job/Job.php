@@ -11,9 +11,9 @@ class Job extends Model
 {
     const TIMEOUT_MESSAGE = 'Job has timed out';
     
-    public function scopeNextJobForQueue(Builder $query, string $queue): void
+    public function scopeNextJobForPipelines(Builder $query, array $pipelines): void
     {
-        $query->where('queue', $queue)
+        $query->whereIn('queue', $pipelines)
             ->sendBeforeNow()
             ->isNotBuried()
             ->isNotComplete()

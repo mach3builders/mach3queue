@@ -34,6 +34,16 @@ describe('Queue', function () {
         expect(Queue::on('queue_2')->getNextJob()->queue)->toBe('queue_2');
     });
 
+    test('can get jobs for specific pipelines', function () {
+        Queue::on('queue_1')->addJob(new FakeEmptyQueueable);
+        Queue::on('queue_2')->addJob(new FakeEmptyQueueable);
+
+        Queue::pipelines(['queue_1', 'queue_2']);
+
+        expect(Queue::getNextJob()->queue)->toBe('queue_1');
+        expect(Queue::getNextJob()->queue)->toBe('queue_2');
+    });
+
     test('can prioritize job', function () {
         $job_1 = Queue::addJob(new FakeEmptyQueueable, 0, 30);
         $job_2 = Queue::addJob(new FakeEmptyQueueable, 0, 20);

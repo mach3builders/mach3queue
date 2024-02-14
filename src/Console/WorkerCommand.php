@@ -14,8 +14,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class WorkerCommand extends Command
 {
-    public function __construct(private array $config)
+    private array $config;
+
+    public function __construct(array $config)
     {
+        $this->config = $config;
+
         parent::__construct();
     }
 
@@ -41,8 +45,22 @@ class WorkerCommand extends Command
 
     private function workerParams(InputInterface $input): array
     {
-        $queue_name = $input->getOption('queue') ?? Queue::DEFAULT_QUEUE;
+        return [
+            'queue' => $this->createQueue($input),
+            'timeout' => $input->getOption('timeout') ?? 60,
+            'actions' => new WorkerActions,
+            'options' => new WorkerOptions(
+                stop_when_empty: $input->getOption('stop-when-empty'),
+            ),
+        ];
+    }
+
+    private function createQueue(InputInterface $input): Queue
+    {
+        $queue_names = $this->getQueueNames($input);
+        
         $queue = new Queue;
+        $queue->pipelines($queue_names);
         $queue->setConnection([
             'driver' => $this->config['db_driver'] ?? 'mysql',
             'host' => $this->config['db_host'],
@@ -51,13 +69,13 @@ class WorkerCommand extends Command
             'password' => $this->config['db_pass'],
         ]);
 
-        return [
-            'queue' => $queue->on($queue_name),
-            'timeout' => $input->getOption('timeout') ?? 60,
-            'actions' => new WorkerActions,
-            'options' => new WorkerOptions(
-                stop_when_empty: $input->getOption('stop-when-empty'),
-            ),
-        ];
+        return $queue;
+    }
+
+    private function getQueueNames(InputInterface $input): array
+    {
+        $queue = $input->getOption('queue');
+
+        return $queue ? explode(',', $queue) : [Queue::DEFAULT_QUEUE];
     }
 }
