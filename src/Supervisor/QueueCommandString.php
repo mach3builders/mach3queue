@@ -9,8 +9,9 @@ class QueueCommandString
     public static function toWorkerOptionsString(SupervisorOptions $options): string
     {
         return sprintf(
-            '--max-processes=%d',
+            '--max-processes=%s --queue=%s',
             $options->maxProcesses,
+            implode(',', $options->queues)
         );
     }
 }

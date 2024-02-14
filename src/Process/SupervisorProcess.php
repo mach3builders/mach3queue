@@ -1,21 +1,21 @@
 <?php
 
-namespace Mach3queue\Supervisor;
+namespace Mach3queue\Process;
 
+use Mach3queue\Supervisor\SupervisorOptions;
 use Symfony\Component\Process\Process;
 
-class SupervisorProcess
+class SupervisorProcess extends QueueProcess
 {
     public bool $dead = false;
 
     private SupervisorOptions $options;
 
-    private Process $process;
-
-    public function __construct( SupervisorOptions $options, Process $process)
+    public function __construct(SupervisorOptions $options, Process $process)
     {
         $this->options = $options;
-        $this->process = $process;
+
+        parent::__construct($process);
     }
 
     public function monitor(): void
