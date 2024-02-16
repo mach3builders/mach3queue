@@ -12,9 +12,4 @@ class WorkerProcess extends QueueProcess
 
         $this->restart();
     }
-
-    private function restart(): void
-    {
-        $this->process->start($this->output);
-    }
 }

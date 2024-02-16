@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Mach3queue\ListensForSignals;
 use Mach3queue\Process\SupervisorProcess;
-use Mach3queue\SuperVisor\Supervisor;
 use Symfony\Component\Process\Process;
 use Throwable;
 
@@ -124,7 +123,11 @@ class MasterSupervisor
         SupervisorOptions $options,
         Process $process
     ): void {
-        $supervisor_process = new SupervisorProcess($options, $process);
+        $supervisor_process = new SupervisorProcess(
+            $options, 
+            $process, 
+            fn ($type, $line) => $this->output->call($this, $type, $line)
+        );
         
         $this->supervisors->push($supervisor_process);
     }
@@ -133,12 +136,13 @@ class MasterSupervisor
     {
         foreach ($config as $supervisor => $options) {
             $supervisor_options = SupervisorOptions::fromConfig($supervisor, $options);
-            $command = $supervisor_options->toWorkerCommand();
+            $supervisor_options->master = $this->name();
+            $command = $supervisor_options->toSupervisorCommand();
             $directory = $supervisor_options->directory;
             $process = Process::fromShellCommandline($command, $directory)
                 ->setTimeout(null)
                 ->disableOutput();
-
+            
             $this->addSupervisorProcess($supervisor_options, $process);
         }
     }

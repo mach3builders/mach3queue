@@ -1,5 +1,6 @@
 <?php
 
+use Mach3queue\Action\PrepareTables;
 use Mach3queue\Queue\QueueManager as Queue;
 use Tests\TestCase;
 
@@ -24,6 +25,8 @@ uses(TestCase::class)->beforeEach(function () {
         'password' => 'test',
     ]);
     $this->queue->setAsGlobal();
+
+    (new PrepareTables)->execute();
 })->in('Unit', 'Feature');
 
 /*

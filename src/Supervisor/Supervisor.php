@@ -4,20 +4,29 @@ namespace Mach3queue\SuperVisor;
 
 use Closure;
 use Illuminate\Support\Collection;
+use Mach3queue\ListensForSignals;
 use Mach3queue\Supervisor\ProcessPool;
 use Mach3queue\Supervisor\SupervisorOptions;
+use Mach3queue\Supervisor\SupervisorRepository;
 
 class Supervisor
 {
-    private SupervisorOptions $options;
+    use ListensForSignals;
 
-    private ProcessPool $process_pool;
+    public string $name;
 
-    private Closure $output;
+    public bool $working = true;
+    
+    public SupervisorOptions $options;
+
+    public ProcessPool $process_pool;
+
+    public Closure $output;
 
     public function __construct(SupervisorOptions $options)
     {
         $this->options = $options;
+        $this->name = $options->toSupervisorName();
         $this->process_pool = $this->createProcessPool();
         $this->output = fn() => null;
     }
@@ -42,6 +51,9 @@ class Supervisor
 
     public function monitor(): void
     {
+        $this->listenForSignals();
+        $this->update();
+
         while (true) {
             sleep(1);
             $this->loop();
@@ -51,6 +63,8 @@ class Supervisor
     public function loop(): void
     {
         $this->process_pool->monitor();
+        $this->processPendingSignals();
+        $this->update();
     }
 
     public function processes(): Collection
@@ -61,6 +75,16 @@ class Supervisor
     public function terminatingProcesses(): Collection
     {
         return $this->process_pool->terminatingProcesses();
+    }
+
+    public function pid()
+    {
+        return getmypid();
+    }
+
+    private function update(): void
+    {
+        SupervisorRepository::update($this);
     }
     
     private function createProcessPool(): ProcessPool

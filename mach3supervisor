@@ -1,9 +1,0 @@
-#!/usr/bin/env php
-<?php
-
-$file = __DIR__ . '/../../autoload.php';
-
-if (!(file_exists($file) && include $file)) {
-    fwrite(STDERR, 'Install dependencies using Composer.'.PHP_EOL);
-    exit(1);
-}

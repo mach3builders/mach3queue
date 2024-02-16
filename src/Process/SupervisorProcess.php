@@ -20,6 +20,11 @@ class SupervisorProcess extends QueueProcess
 
     public function monitor(): void
     {
+        if (! $this->process->isStarted()) {
+            $this->restart();
+            return;
+        }
+
         if ($this->process->isRunning()) {
             // we are fine so don't do anything
             return;

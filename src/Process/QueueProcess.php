@@ -11,9 +11,15 @@ class QueueProcess
 
     public Closure $output;
 
-    public function __construct(Process $process)
+    public function __construct(Process $process, Closure $output = null)
     {
         $this->process = $process;
+        $this->output = $output ?: fn() => null;
+    }
+
+    protected function restart()
+    {
+        $this->start($this->output);
     }
 
     public function start(Closure $callback): void
