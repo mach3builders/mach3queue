@@ -19,7 +19,10 @@ class Console
         $output = new ConsoleOutput;
 
         match ($argv[1]) {
+            'queue' => (new QueueCommand($this->config))->run($input, $output),
             'queue:worker' => (new WorkerCommand($this->config))->run($input, $output),
+            'queue:supervisor' => (new SupervisorCommand)->run($input, $output),
+            'queue:install' => (new InstallCommand)->run($input, $output),
             default => null,
         };
     }
