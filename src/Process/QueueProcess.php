@@ -25,7 +25,7 @@ class QueueProcess
     public function start(Closure $callback): void
     {
         $this->output = $callback;
-
+        
         $this->process->start($callback);
     }
 

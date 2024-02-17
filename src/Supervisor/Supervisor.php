@@ -84,7 +84,7 @@ class Supervisor
 
     private function update(): void
     {
-        SupervisorRepository::update($this);
+        SupervisorRepository::updateOrCreate($this);
     }
     
     private function createProcessPool(): ProcessPool

@@ -6,6 +6,7 @@ use Carbon\CarbonImmutable;
 use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Mach3queue\Action\CreateSupervisorOptionFromConfig;
 use Mach3queue\ListensForSignals;
 use Mach3queue\Process\SupervisorProcess;
 use Symfony\Component\Process\Process;
@@ -135,13 +136,16 @@ class MasterSupervisor
     private function createSupervisorsFromConfig(array $config): void
     {
         foreach ($config as $supervisor => $options) {
-            $supervisor_options = SupervisorOptions::fromConfig($supervisor, $options);
-            $supervisor_options->master = $this->name();
-            $command = $supervisor_options->toSupervisorCommand();
-            $directory = $supervisor_options->directory;
-            $process = Process::fromShellCommandline($command, $directory)
-                ->setTimeout(null)
-                ->disableOutput();
+            $supervisor_options = CreateSupervisorOptionFromConfig::create(
+                $this,
+                $supervisor,
+                $options
+            );
+
+            $process = Process::fromShellCommandline(
+                $supervisor_options->toSupervisorCommand(),
+                $supervisor_options->directory
+            )->setTimeout(null)->disableOutput();
             
             $this->addSupervisorProcess($supervisor_options, $process);
         }

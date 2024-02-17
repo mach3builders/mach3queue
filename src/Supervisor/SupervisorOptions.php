@@ -17,7 +17,7 @@ class SupervisorOptions
     {
         return new static(
             name: $name,
-            queues: $config['queues'] ?? ['default'],
+            queues: $config['queue'] ?? ['default'],
             maxProcesses: $config['max_processes'] ?? 1,
             directory: $config['directory'] ?? __DIR__,
         );

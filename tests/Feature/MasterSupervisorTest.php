@@ -2,10 +2,7 @@
 
 use Mach3queue\Process\SupervisorProcess;
 use Mach3queue\Supervisor\MasterSupervisor;
-use Mach3queue\SuperVisor\Supervisor;
-use Mach3queue\Supervisor\SupervisorCommandString;
 use Mach3queue\Supervisor\SupervisorOptions;
-use Mach3queue\Supervisor\SupervisorRepository;
 use Symfony\Component\Process\Process;
 
 describe('Master Supervisor', function () {
@@ -41,28 +38,35 @@ describe('Master Supervisor', function () {
     });
 
     test('Can create supervisors based on a config', function() {
-        SupervisorCommandString::$command = 'exec '.PHP_BINARY.' supervisor.php';
-
         $config = [
             'supervisor-1' => [
                 'queue' => ['default'],
-                'maxProcesses' => 5,
+                'max_processes' => 5,
                 'timeout' => 60,
                 'directory' => realpath(__DIR__.'/../'),
             ],
             'supervisor-2' => [
                 'queue' => ['ai', 'export'],
-                'maxProcesses' => 3,
+                'max_processes' => 3,
                 'timeout' => 60,
                 'directory' => realpath(__DIR__.'/../'),
             ],
         ];
 
         $master = new MasterSupervisor($config);
-        $master->loop();
-        
-        expect($master->supervisors)->toHaveCount(2);
-        expect(SupervisorRepository::get('supervisor-1')->processes)->toBe(5);
-        expect(SupervisorRepository::get('supervisor-2')->processes)->toBe(3);
+
+        expect($master->supervisors)->toHaveCount(2)
+        ->and($master->supervisors[0]->process->getCommandLine())
+            ->toContain('mach3 queue:supervisor')
+            ->toContain('--max-processes=5')
+            ->toContain('--queue=default')
+            ->toContain('--master='.MasterSupervisor::name())
+            ->toContain('--directory='.realpath(__DIR__.'/../'))
+        ->and($master->supervisors[1]->process->getCommandLine())
+            ->toContain('mach3 queue:supervisor')
+            ->toContain('--max-processes=3')
+            ->toContain('--queue=ai,export')
+            ->toContain('--master='.MasterSupervisor::name())
+            ->toContain('--directory='.realpath(__DIR__.'/../'));
     });
 });

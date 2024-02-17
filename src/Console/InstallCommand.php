@@ -10,20 +10,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallCommand extends Command
 {
-    private array $config;
-
-    public function __construct(array $config)
-    {
-        $this->config = $config;
-
-        parent::__construct();
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Installing queue.');
 
-        (new PrepareTables)->execute($this->config);
+        (new PrepareTables)->execute();
 
         $output->writeln('Done installing.');
 
