@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class QueueCommand extends Command
 {
     private OutputInterface $output;
-
+    
     private MasterSupervisor $master;
 
     private array $config;
@@ -25,9 +25,8 @@ class QueueCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
-
         $this->validateConfig();
-        $this->createNewMaster();
+        $this->createNewMaster($output);
         $this->listenForInterruption();
 
         $output->writeln('Queue started successfully.');
@@ -46,11 +45,11 @@ class QueueCommand extends Command
         throw new \Exception('Queue configuration is missing.');
     }
 
-    private function createNewMaster(): void
+    private function createNewMaster(OutputInterface $output): void
     {
         $this->master = new MasterSupervisor($this->config['queue']);
-        $this->master->handleOutputUsing(function($_, $line) {
-            $this->output->writeln($line);
+        $this->master->handleOutputUsing(function($_, $line) use ($output) {
+            $output->writeln($line);
         });
     }
 
