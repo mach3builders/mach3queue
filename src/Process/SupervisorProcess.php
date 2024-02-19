@@ -10,7 +10,7 @@ class SupervisorProcess extends QueueProcess
 {
     public bool $dead = false;
 
-    private SupervisorOptions $options;
+    public SupervisorOptions $options;
 
     public function __construct(
         SupervisorOptions $options,

@@ -8,6 +8,7 @@ class SupervisorOptions
         public string $name = 'Supervisor',
         public string $master = 'master',
         public array $queues = ['default'],
+        public int $timeout = 60,
         public int $maxProcesses = 1,
         public string $directory = __DIR__,
     ) {
@@ -18,6 +19,7 @@ class SupervisorOptions
         return new static(
             name: $name,
             queues: $config['queue'] ?? ['default'],
+            timeout: $config['timeout'] ?? 60,
             maxProcesses: $config['max_processes'] ?? 1,
             directory: $config['directory'] ?? __DIR__,
         );
@@ -43,6 +45,7 @@ class SupervisorOptions
         return json_encode([
             'name' => $this->name,
             'queues' => implode(',', $this->queues),
+            'timeout' => $this->timeout,
             'maxProcesses' => $this->maxProcesses,
             'directory' => $this->directory,
         ]);

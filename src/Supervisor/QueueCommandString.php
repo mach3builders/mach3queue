@@ -18,11 +18,12 @@ class QueueCommandString
     public static function toSupervisorOptionsString(SupervisorOptions $options): string
     {
         return sprintf(
-            '--max-processes=%s --queue=%s --master=%s --directory=%s',
+            '--max-processes=%s --queue=%s --master=%s --directory=%s --timeout=%s',
             $options->maxProcesses,
             implode(',', $options->queues),
             $options->master,
             $options->directory,
+            $options->timeout,
         );
     }
 }
