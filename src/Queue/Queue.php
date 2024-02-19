@@ -3,6 +3,7 @@ namespace Mach3queue\Queue;
 
 use Mach3queue\Action\SetupDatabase;
 use Mach3queue\Job\Job;
+use Illuminate\Database\Capsule\Manager as Database;
 
 class Queue
 {
@@ -61,14 +62,24 @@ class Queue
 
     public function getNextJob(): ?Job
     {
-        $job = Job::nextJobForPipeLines($this->getPipelines())->first();
+        Database::beginTransaction();
 
-        if ($job) {
-            $this->actions->reserveJob($job);
+        try {
+            $job = Job::nextJobForPipeLines($this->getPipelines())
+                ->lockForUpdate()
+                ->first();
+
+            if ($job) {
+                $this->actions->reserveJob($job);
+            }
+
+            Database::commit();
+        } catch (\Throwable $_) {
+            Database::rollBack();
         }
 
         $this->resetQueue();
-        
+
         return $job;
 	}
 
