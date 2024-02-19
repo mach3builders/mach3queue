@@ -15,9 +15,6 @@
         "pestphp/pest": "^2.33",
         "mockery/mockery": "^1.6"
     },
-    "bin": [
-        "mach3worker"
-    ],
     "config": {
         "allow-plugins": {
             "pestphp/pest-plugin": true
