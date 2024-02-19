@@ -69,4 +69,20 @@ describe('Master Supervisor', function () {
             ->toContain('--master='.MasterSupervisor::name())
             ->toContain('--directory='.realpath(__DIR__.'/../'));
     });
+
+    test('Can get longest running supervisor', function() {
+        $config = [
+            'supervisor-1' => [
+                'queue' => ['default'],
+                'max_processes' => 1,
+                'timeout' => 300,
+                'directory' => realpath(__DIR__.'/../'),
+            ],
+        ];
+
+        $master = new MasterSupervisor($config);
+        $longest = $master->getLongestTimeoutSupervisor();
+
+        expect($longest)->toBe(300);
+    });
 });

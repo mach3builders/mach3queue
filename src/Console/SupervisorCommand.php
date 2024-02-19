@@ -20,6 +20,7 @@ class SupervisorCommand extends Command
                 new InputOption('max-processes', 'mp', InputOption::VALUE_REQUIRED),
                 new InputOption('queue', 'q', InputOption::VALUE_REQUIRED),
                 new InputOption('master', 'm', InputOption::VALUE_REQUIRED),
+                new InputOption('timeout', 't', InputOption::VALUE_OPTIONAL),
                 new InputOption('directory', 'd', InputOption::VALUE_OPTIONAL),
             ])
         );
