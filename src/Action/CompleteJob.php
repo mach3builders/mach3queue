@@ -7,10 +7,31 @@ use Mach3queue\Job\Job;
 
 class CompleteJob
 {
+    private Job $job;
+    private mixed $action;
+
     public function execute(Job $job): void
     {
-        $job->is_complete = true;
-        $job->complete_dt = Carbon::now();
-        $job->save();
+        $this->job = $job;
+        $this->action = unserialize($job->payload);
+
+        $this->completeAction();
+        $this->printDone();
+    }
+
+    private function completeAction(): void
+    {
+        $this->job->is_complete = true;
+        $this->job->complete_dt = Carbon::now();
+        $this->job->save();
+    }
+
+    private function printDone(): void
+    {
+        $pid = getmypid();
+        $id = $this->job->id;
+        $class = get_class($this->action);
+
+        echo "[$pid] finished job: [$id] $class".PHP_EOL;
     }
 }

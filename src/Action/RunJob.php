@@ -6,9 +6,24 @@ use Mach3queue\Job\Job;
 
 class RunJob
 {
+    private Job $job;
+    private mixed $action;
+
     public function execute(Job $job): void
     {
-        $action = unserialize($job->payload);
-        $action->handle();
+        $this->job = $job;
+        $this->action = unserialize($job->payload);
+
+        $this->printStart();
+        $this->action->handle();
+    }
+
+    private function printStart(): void
+    {
+        $pid = getmypid();
+        $id = $this->job->id;
+        $class = get_class($this->action);
+
+        echo "[$pid] running  job: [$id] $class".PHP_EOL;
     }
 }

@@ -47,10 +47,9 @@ class QueueCommand extends Command
 
     private function createNewMaster(OutputInterface $output): void
     {
+        $callable = fn($_, $line) => $output->write($line);
         $this->master = new MasterSupervisor($this->config['queue']);
-        $this->master->handleOutputUsing(function($_, $line) use ($output) {
-            $output->writeln($line);
-        });
+        $this->master->handleOutputUsing($callable);
     }
 
     private function listenForInterruption(): void

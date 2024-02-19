@@ -30,7 +30,7 @@ class SupervisorCommand extends Command
     {
         $options = $this->getSupervisorOptions($input);
         $supervisor = new Supervisor($options);
-        $supervisor->handleOutputUsing(fn($_, $line) => $output->writeln($line));
+        $supervisor->handleOutputUsing(fn($_, $line) => $output->write($line));
         $supervisor->monitor();
 
         return Command::SUCCESS;

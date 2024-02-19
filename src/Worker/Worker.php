@@ -73,8 +73,6 @@ class Worker
 
     private function runJob(Job $job): void
     {
-        echo "Running job {$job->id}".PHP_EOL;
-
         try {
             $this->actions->runJob->execute($job);
             $this->actions->completeJob->execute($job);
