@@ -2,9 +2,28 @@
 
 use Mach3queue\SuperVisor\Supervisor;
 use Mach3queue\Supervisor\SupervisorOptions;
+use Mach3queue\Supervisor\SupervisorRepository;
 use Mach3queue\Supervisor\WorkerCommandString;
 
 describe('Supervisor', function () {
+    test('can be found in repository', function () {
+        $options = supervisorOptions();
+        $supervisor = new Supervisor($options);
+
+        $supervisor->loop();
+        
+        expect(SupervisorRepository::get($supervisor->name))->not->toBeNull();
+    });
+
+    test('can be terminated', function () {
+        $options = supervisorOptions();
+        $supervisor = new Supervisor($options);
+
+        $supervisor->terminate();
+        
+        expect(SupervisorRepository::get($supervisor->name))->toBeNull();
+    });
+
     test('can start worker process', function () {
         $options = supervisorOptions();
         $supervisor = new Supervisor($options);
@@ -38,12 +57,25 @@ describe('Supervisor', function () {
         expect($supervisor->processes()->count())->toBe(1);
         expect($supervisor->terminatingProcesses()->count())->toBe(1);
     });
+
+    // test('can auto scale process pool', function () {
+    //     $options = supervisorOptions();
+    //     $supervisor = new Supervisor($options);
+
+    //     $supervisor->loop();
+
+    //     expect($supervisor->processes()->count())->toBe(2);
+    // });
 });
 
 function supervisorOptions(): SupervisorOptions
 {
     WorkerCommandString::$command = 'exec '.PHP_BINARY.' worker.php';
+    
     return new SupervisorOptions(
         maxProcesses: 5,
+        minProcesses: 2,
+        balanceCooldown: 1,
+        directory: realpath(__DIR__.'/../'),
     );
 }

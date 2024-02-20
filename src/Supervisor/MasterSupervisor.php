@@ -20,10 +20,13 @@ class MasterSupervisor
 
     public Closure $output;
 
-    public bool $is_working = true;
+    public bool $working = true;
+
+    public string $name;
 
     public function __construct(array $config)
     {
+        $this->name = static::name();
         $this->supervisors = new Collection;
         $this->createSupervisorsFromConfig($config);
     }
@@ -31,6 +34,7 @@ class MasterSupervisor
     public function monitor(): void
     {
         $this->listenForSignals();
+        $this->updateRepository();
 
         while (true) {
             sleep(1);
@@ -47,11 +51,13 @@ class MasterSupervisor
         } catch (Throwable $e) {
             throw $e;
         }
+
+        $this->updateRepository();
     }
 
     private function monitorSupervisors(): void
     {
-        if (! $this->is_working) {
+        if (! $this->working) {
             return;
         }
 
@@ -89,34 +95,33 @@ class MasterSupervisor
 
     public function restart(): void
     {
-        $this->is_working = true;
+        $this->working = true;
         $this->supervisors->each->restart();
     }
 
     public function pause(): void
     {
-        $this->is_working = false;
+        $this->working = false;
         $this->supervisors->each->pause();
     }
 
     public function continue(): void
     {
-        $this->is_working = true;
+        $this->working = true;
         $this->supervisors->each->continue();
     }
 
     public function terminate(): void
     {
-        $this->is_working = false;
+        $this->working = false;
 
         $this->supervisors->each->terminate();
 
-        // TODO remove master supervisor from the repository so it can 
-        // start a new one without waiting for this one to die out.
+        SupervisorRepository::forget($this->name);
 
         $this->waitForSupervisorsToTerminate();
-
-        exit(1);
+        
+        $this->exit(1);
     }
 
 
@@ -131,6 +136,11 @@ class MasterSupervisor
         );
         
         $this->supervisors->push($supervisor_process);
+    }
+
+    protected function exit(int $status = 0): void
+    {
+        exit($status);
     }
 
     private function createSupervisorsFromConfig(array $config): void
@@ -170,7 +180,7 @@ class MasterSupervisor
         }
     }
     
-    private function getLongestTimeoutSupervisor(): int
+    public function getLongestTimeoutSupervisor(): int
     {
         return $this->supervisors->max('options.timeout');
     }
@@ -182,5 +192,10 @@ class MasterSupervisor
         return CarbonImmutable::now()
             ->subSeconds($longest)
             ->gte($startedTerminating);
+    }
+
+    private function updateRepository(): void
+    {
+        SupervisorRepository::updateOrCreateMaster($this);
     }
 }

@@ -10,7 +10,7 @@ class Worker
 {
     const EXIT_ERROR = 1;
 
-    private bool $shouldQuit = false;
+    private bool $should_quit = false;
 
     public function __construct(
         private Queue $queue, 
@@ -48,10 +48,11 @@ class Worker
         }
     }
 
-    public function quit(): void
+    public function terminate(): void
     {
-        echo "Quitting worker".PHP_EOL;
-        $this->shouldQuit = true;
+        echo "\033[34mQuitting worker\033[0m".PHP_EOL;
+
+        $this->should_quit = true;
     }
 
     public function pause(): void
@@ -65,7 +66,7 @@ class Worker
     private function checkIfShouldStop(?Job $job = null): int
     {
         return match (true) {
-            $this->shouldQuit => self::EXIT_ERROR,
+            $this->should_quit => self::EXIT_ERROR,
             $this->options->stop_when_empty && empty($job) => self::EXIT_ERROR,
             default => 0,
         };

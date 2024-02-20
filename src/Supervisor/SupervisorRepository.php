@@ -12,8 +12,17 @@ class SupervisorRepository
     public static function get(string $name): ?object
     {
         return DB::table(self::TABLE)
-            ->where('name', $name)
+            ->where('name', 'supervisor:'.$name)
+            ->orWhere('name', $name)
             ->first();
+    }
+
+    public static function forget(string $name): void
+    {
+        DB::table(self::TABLE)
+            ->where('name', 'supervisor:'.$name)
+            ->orWhere('name', $name)
+            ->delete();
     }
 
     public static function updateOrCreate(Supervisor $supervisor): void
@@ -25,7 +34,24 @@ class SupervisorRepository
             'processes' => count($supervisor->process_pool),
             'options' => $supervisor->options->toJson(),
         ];
-        $match = ['name' => 'supervisor:'.$supervisor->name];
+        $match = [
+            'name' => 'supervisor:'.$supervisor->name
+        ];
+
+        DB::table(self::TABLE)->updateOrInsert($data, $match);
+    }
+
+    public static function updateOrCreateMaster(MasterSupervisor $master): void
+    {
+        $data = [
+            'pid' => $master->pid(),
+            'status' => $master->working ? 'running' : 'paused',
+            'processes' => count($master->supervisors),
+        ];
+        $match = [
+            'name' => $master->name,
+            'master' => null
+        ];
 
         DB::table(self::TABLE)->updateOrInsert($data, $match);
     }

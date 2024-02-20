@@ -2,9 +2,11 @@
 
 namespace Mach3queue\SuperVisor;
 
+use Carbon\CarbonImmutable;
 use Closure;
 use Illuminate\Support\Collection;
 use Mach3queue\ListensForSignals;
+use Mach3queue\Supervisor\AutoScaler;
 use Mach3queue\Supervisor\ProcessPool;
 use Mach3queue\Supervisor\SupervisorOptions;
 use Mach3queue\Supervisor\SupervisorRepository;
@@ -23,9 +25,16 @@ class Supervisor
 
     public Closure $output;
 
-    public function __construct(SupervisorOptions $options)
-    {
+    public CarbonImmutable $last_auto_scaled;
+
+    public AutoScaler $auto_scaler;
+
+    public function __construct(
+        SupervisorOptions $options,
+        AutoScaler $auto_scaler = new AutoScaler
+    ) {
         $this->options = $options;
+        $this->auto_scaler = $auto_scaler;
         $this->name = $options->toSupervisorName();
         $this->process_pool = $this->createProcessPool();
         $this->output = fn() => null;
@@ -52,7 +61,7 @@ class Supervisor
     public function monitor(): void
     {
         $this->listenForSignals();
-        $this->update();
+        $this->updateRepository();
 
         while (true) {
             sleep(1);
@@ -62,9 +71,29 @@ class Supervisor
 
     public function loop(): void
     {
-        $this->process_pool->monitor();
         $this->processPendingSignals();
-        $this->update();
+
+        if ($this->working) {
+            // TODO: Implement auto scale method
+            $this->process_pool->monitor();
+        }
+
+        $this->updateRepository();
+    }
+
+    public function terminate(int $status = 0): void
+    {
+        $this->working = false;
+
+        SupervisorRepository::forget($this->name);
+
+        $this->process_pool->terminate();
+
+        while ($this->process_pool->runningProcesses()->count()) {
+            sleep(1);
+        }
+
+        $this->exit($status);
     }
 
     public function processes(): Collection
@@ -82,15 +111,47 @@ class Supervisor
         return getmypid();
     }
 
-    private function update(): void
+    private function updateRepository(): void
     {
         SupervisorRepository::updateOrCreate($this);
     }
-    
+
+    private function autoScale(): void
+    {
+        $this->initLastAutoScaled();
+
+        if ($this->timePassedForAutoScale()) {
+            $this->last_auto_scaled = CarbonImmutable::now();
+            $this->auto_scaler->scale($this);
+        }
+    }
+
+    private function initLastAutoScaled(): void
+    {
+        if (isset($this->last_auto_scaled)) {
+            return;
+        }
+
+        $this->last_auto_scaled = CarbonImmutable::now()
+            ->subSeconds($this->options->balanceCooldown + 1);
+    }
+
+    private function timePassedForAutoScale(): bool
+    {
+        return CarbonImmutable::now()
+            ->subSeconds($this->options->balanceCooldown)
+            ->gte($this->last_auto_scaled);
+    }
+
     private function createProcessPool(): ProcessPool
     {
         return new ProcessPool($this->options, function ($type, $line) {
             $this->output($type, $line);
         });
+    }
+
+    protected function exit(int $status = 0)
+    {
+        exit($status);
     }
 }

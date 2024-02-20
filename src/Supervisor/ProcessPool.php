@@ -54,7 +54,6 @@ class ProcessPool implements Countable
     private function scaleDown(int $process_amount)
     {
         $difference = $process_amount - $this->processes->count();
-
         $terminatingProcesses = $this->processes->slice(0, $difference);
 
         foreach ($terminatingProcesses as $process) {
@@ -104,6 +103,11 @@ class ProcessPool implements Countable
         $this->processes->each->monitor();
     }
 
+    public function terminate(): void
+    {
+        $this->processes->each->terminate();
+    }
+
     public function count(): int
     {
         return $this->processes->count();
@@ -117,5 +121,10 @@ class ProcessPool implements Countable
     public function terminatingProcesses(): Collection
     {
         return $this->terminatingProcesses;
+    }
+
+    public function runningProcesses(): Collection
+    {
+        return $this->processes->filter->isRunning();
     }
 }

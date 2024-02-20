@@ -20,7 +20,8 @@ class AsyncSignal
 
     public function listenForSignalsOnWorker(Worker $worker): void
     {
-        pcntl_signal(SIGTERM, fn() => $worker->quit());
+        pcntl_signal(SIGQUIT, fn() => $worker->terminate());
+        pcntl_signal(SIGTERM, fn() => $worker->terminate());
         pcntl_signal(SIGUSR2, fn() => $worker->pause());
         pcntl_signal(SIGCONT, fn() => $worker->resume());
     }

@@ -53,6 +53,11 @@ class QueueProcess
         $this->process->stop();
     }
 
+    public function getIdleTime(): float
+    {
+        return microtime(true) - $this->process->getLastOutputTime();
+    }
+
     private function sendSignal(int $signal)
     {
         try {

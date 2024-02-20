@@ -3,7 +3,9 @@
 use Mach3queue\Process\SupervisorProcess;
 use Mach3queue\Supervisor\MasterSupervisor;
 use Mach3queue\Supervisor\SupervisorOptions;
+use Mach3queue\Supervisor\SupervisorRepository;
 use Symfony\Component\Process\Process;
+use Tests\Feature\Fakes\MasterSupervisorWithFakeExit;
 
 describe('Master Supervisor', function () {
     test('Has a name', function () {
@@ -68,6 +70,40 @@ describe('Master Supervisor', function () {
             ->toContain('--queue=ai,export')
             ->toContain('--master='.MasterSupervisor::name())
             ->toContain('--directory='.realpath(__DIR__.'/../'));
+    });
+
+    test('Can be found in repository', function() {
+        $master = new MasterSupervisor([]);
+        $master->loop();
+
+        $supervisor = SupervisorRepository::get(MasterSupervisor::name());
+
+        expect($supervisor->name)->toBe(MasterSupervisor::name());
+        expect($supervisor->status)->toBe('running');
+    });
+
+    test('Can terminate', function () {
+        $config = [
+            'supervisor-1' => [
+                'queue' => ['default'],
+                'max_processes' => 5,
+                'timeout' => 60,
+                'directory' => realpath(__DIR__.'/../'),
+            ],
+            'supervisor-2' => [
+                'queue' => ['ai', 'export'],
+                'max_processes' => 3,
+                'timeout' => 60,
+                'directory' => realpath(__DIR__.'/../'),
+            ],
+        ];
+
+        $master = new MasterSupervisorWithFakeExit($config);
+        $master->loop();
+        $master->terminate();
+
+        expect($master->exited)->toBeTrue();
+        expect(SupervisorRepository::get(MasterSupervisor::name()))->toBeEmpty();
     });
 
     test('Can get longest running supervisor', function() {

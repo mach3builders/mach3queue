@@ -38,9 +38,8 @@ class WorkerCommand extends Command
     {
         $worker_params = $this->workerParams($input);
         $worker = new Worker(...$worker_params);
-        $worker->run();
-
-        return Command::SUCCESS;
+        
+        return $worker->run();
     }
 
     private function workerParams(InputInterface $input): array

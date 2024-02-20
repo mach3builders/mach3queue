@@ -1,6 +1,5 @@
 <?php
 
-use Mach3queue\Action\FakeAction;
 use Mach3queue\Action\KillWorker;
 use Mach3queue\Job\Job;
 use Mach3queue\Job\Status;
