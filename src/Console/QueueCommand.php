@@ -29,7 +29,7 @@ class QueueCommand extends Command
         $this->createNewMaster($output);
         $this->listenForInterruption();
 
-        $output->writeln('Queue started successfully.');
+        $output->writeln('<info>Queue started successfully.</info>');
 
         $this->master->monitor();
 
@@ -62,7 +62,7 @@ class QueueCommand extends Command
     private function shutDown(): void
     {
         $this->output->writeln('');
-        $this->output->writeln('Shutting down...');
+        $this->output->writeln('<info>Shutting down...</info>');
         $this->master->terminate();
     }
 }

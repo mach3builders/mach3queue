@@ -37,7 +37,7 @@ class BuryJob
         $id = $this->job->id;
         $class = get_class($this->action);
 
-        echo "[$pid] buried   job: [$id] $class".PHP_EOL;
-        echo "[$pid] message: $this->message".PHP_EOL;
+        echo "\033[31m[$pid] buried   job: [$id] $class\033[0m".PHP_EOL;
+        echo "\033[31m[$pid] message: $this->message\033[0m".PHP_EOL;
     }
 }
