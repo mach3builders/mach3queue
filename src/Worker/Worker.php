@@ -22,6 +22,8 @@ class Worker
 
     public function run(): int
     {
+        $this->listenForSignalsOnWorker();
+        
         while(true) {
             $job = $this->queue->getNextJob();
 
@@ -45,14 +47,14 @@ class Worker
         }
     }
 
-    public function listenForSignalsOnWorker(Worker $worker): void
+    public function listenForSignalsOnWorker(): void
     {
         pcntl_async_signals(true);
 
-        pcntl_signal(SIGQUIT, fn() => $worker->terminate());
-        pcntl_signal(SIGTERM, fn() => $worker->terminate());
-        pcntl_signal(SIGUSR2, fn() => $worker->pause());
-        pcntl_signal(SIGCONT, fn() => $worker->resume());
+        pcntl_signal(SIGQUIT, fn() => $this->terminate());
+        pcntl_signal(SIGTERM, fn() => $this->terminate());
+        pcntl_signal(SIGUSR2, fn() => $this->pause());
+        pcntl_signal(SIGCONT, fn() => $this->resume());
     }
 
     public function registerTimeoutHandlerForJob(callable $callback): void
