@@ -23,7 +23,8 @@ class RunJob
         $pid = getmypid();
         $id = $this->job->id;
         $class = get_class($this->action);
+        $time = date('Y-m-d H:i:s');
 
-        echo "[$pid] running  job: [$id] $class".PHP_EOL;
+        echo "$time [$pid] running  job: [$id] $class".PHP_EOL;
     }
 }

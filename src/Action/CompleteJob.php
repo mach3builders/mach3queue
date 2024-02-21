@@ -31,7 +31,8 @@ class CompleteJob
         $pid = getmypid();
         $id = $this->job->id;
         $class = get_class($this->action);
+        $time = date('Y-m-d H:i:s');
 
-        echo "\033[32m[$pid] finished job: [$id] $class\033[0m".PHP_EOL;
+        echo "\033$time [32m[$pid] finished job: [$id] $class\033[0m".PHP_EOL;
     }
 }
