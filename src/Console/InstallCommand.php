@@ -3,7 +3,6 @@
 namespace Mach3queue\Console;
 
 use Mach3queue\Action\PrepareTables;
-use Mach3queue\Supervisor\MasterSupervisor;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

@@ -55,4 +55,12 @@ class SupervisorRepository
 
         DB::table(self::TABLE)->updateOrInsert($data, $match);
     }
+
+    public static function allMasters(): array
+    {
+        return DB::table(self::TABLE)
+            ->where('master', null)
+            ->get()
+            ->toArray();
+    }
 }

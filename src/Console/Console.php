@@ -23,6 +23,7 @@ class Console
             'queue:worker' => (new WorkerCommand($this->config))->run($input, $output),
             'queue:supervisor' => (new SupervisorCommand)->run($input, $output),
             'queue:install' => (new InstallCommand)->run($input, $output),
+            'queue:terminate' => (new TerminateCommand())->run($input, $output),
             default => null,
         };
     }

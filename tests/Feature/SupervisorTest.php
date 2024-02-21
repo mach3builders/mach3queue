@@ -4,6 +4,7 @@ use Mach3queue\SuperVisor\Supervisor;
 use Mach3queue\Supervisor\SupervisorOptions;
 use Mach3queue\Supervisor\SupervisorRepository;
 use Mach3queue\Supervisor\WorkerCommandString;
+use Tests\Feature\Fakes\SupervisorWithFakeExit;
 
 describe('Supervisor', function () {
     test('can be found in repository', function () {
@@ -17,10 +18,11 @@ describe('Supervisor', function () {
 
     test('can be terminated', function () {
         $options = supervisorOptions();
-        $supervisor = new Supervisor($options);
+        $supervisor = new SupervisorWithFakeExit($options);
 
         $supervisor->terminate();
         
+        expect($supervisor->exited)->toBeTrue();
         expect(SupervisorRepository::get($supervisor->name))->toBeNull();
     });
 
