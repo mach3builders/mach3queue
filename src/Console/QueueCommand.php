@@ -62,7 +62,7 @@ class QueueCommand extends Command
     private function shutDown(): void
     {
         $this->output->writeln('');
-        $this->output->writeln('\033[34Shutting down...\033[0');
+        $this->output->writeln('<info>Shutting down...</info>');
         $this->master->terminate();
     }
 }
