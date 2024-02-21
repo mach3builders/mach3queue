@@ -23,7 +23,7 @@ class Worker
     public function run(): int
     {
         $this->listenForSignalsOnWorker();
-        
+
         while(true) {
             $job = $this->queue->getNextJob();
 
