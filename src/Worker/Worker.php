@@ -22,9 +22,6 @@ class Worker
 
     public function run(): int
     {
-        $async_signal = new AsyncSignal;
-        $async_signal->setTimeout($this->timeout);
-
         while(true) {
             $job = $this->queue->getNextJob();
 
@@ -37,15 +34,36 @@ class Worker
                 continue;
             }
 
-            $async_signal->registerTimeoutHandlerForJob(function() use ($job) {
+            $this->registerTimeoutHandlerForJob(function() use ($job) {
                 $this->actions->timeoutJob->execute($job);
                 $this->actions->killWorker->execute();
             });
             
             $this->runJob($job);
 
-            $async_signal->resetTimeoutHandler();
+            $this->resetTimeoutHandler();
         }
+    }
+
+    public function listenForSignalsOnWorker(Worker $worker): void
+    {
+        pcntl_async_signals(true);
+
+        pcntl_signal(SIGQUIT, fn() => $worker->terminate());
+        pcntl_signal(SIGTERM, fn() => $worker->terminate());
+        pcntl_signal(SIGUSR2, fn() => $worker->pause());
+        pcntl_signal(SIGCONT, fn() => $worker->resume());
+    }
+
+    public function registerTimeoutHandlerForJob(callable $callback): void
+    {
+        pcntl_signal(SIGALRM, $callback);
+        pcntl_alarm(max($this->timeout, 0));
+    }
+
+    public function resetTimeoutHandler(): void
+    {
+        pcntl_alarm(0);
     }
 
     public function terminate(): void
