@@ -30,8 +30,8 @@ describe('Queue', function () {
         Queue::on('queue_1')->addJob(new FakeEmptyQueueable);
         Queue::on('queue_2')->addJob(new FakeEmptyQueueable);
 
-        expect(Queue::on('queue_1')->getNextJob()->queue)->toBe('queue_1');
-        expect(Queue::on('queue_2')->getNextJob()->queue)->toBe('queue_2');
+        expect(Queue::on('queue_1')->getNextJob()->queue)->toBe('queue_1')
+            ->and(Queue::on('queue_2')->getNextJob()->queue)->toBe('queue_2');
     });
 
     test('can get jobs for specific pipelines', function () {
@@ -40,8 +40,8 @@ describe('Queue', function () {
 
         Queue::pipelines(['queue_1', 'queue_2']);
 
-        expect(Queue::getNextJob()->queue)->toBe('queue_1');
-        expect(Queue::getNextJob()->queue)->toBe('queue_2');
+        expect(Queue::getNextJob()->queue)->toBe('queue_1')
+            ->and(Queue::getNextJob()->queue)->toBe('queue_2');
     });
 
     test('can prioritize job', function () {
@@ -49,9 +49,9 @@ describe('Queue', function () {
         $job_2 = Queue::addJob(new FakeEmptyQueueable, 0, 20);
         $job_3 = Queue::addJob(new FakeEmptyQueueable, 0, 10);
 
-        expect($job_3->id)->toBe(Queue::getNextJob()->id);
-        expect($job_2->id)->toBe(Queue::getNextJob()->id);
-        expect($job_1->id)->toBe(Queue::getNextJob()->id);
+        expect($job_3->id)->toBe(Queue::getNextJob()->id)
+            ->and($job_2->id)->toBe(Queue::getNextJob()->id)
+            ->and($job_1->id)->toBe(Queue::getNextJob()->id);
     });
 
     test('can bury job', function () {
@@ -61,7 +61,7 @@ describe('Queue', function () {
         
         $job->refresh();
 
-        expect($job->is_buried)->toBe(1);
-        expect($job->message)->toBe('test');
+        expect($job->is_buried)->toBe(1)
+            ->and($job->message)->toBe('test');
     });
 });

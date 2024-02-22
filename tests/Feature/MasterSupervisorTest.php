@@ -11,8 +11,8 @@ describe('Master Supervisor', function () {
     test('Has a name', function () {
         $name = MasterSupervisor::name();
         
-        expect($name)->toBeString();
-        expect($name)->not->toBeEmpty();
+        expect($name)->toBeString()
+            ->and($name)->not->toBeEmpty();
     });
 
     test('can add a new supervisor process', function () {
@@ -20,8 +20,8 @@ describe('Master Supervisor', function () {
         $process = Mockery::mock(Process::class);
         $master->addSupervisorProcess(new SupervisorOptions, $process);
 
-        expect($master->supervisors)->toHaveCount(1);
-        expect($master->supervisors[0])->toBeInstanceOf(SupervisorProcess::class);
+        expect($master->supervisors)->toHaveCount(1)
+            ->and($master->supervisors[0])->toBeInstanceOf(SupervisorProcess::class);
     });
 
     test('Can clean up dead supervisor process', function () {
@@ -35,8 +35,8 @@ describe('Master Supervisor', function () {
 
         $master->loop();
 
-        expect($supervisor_process->dead)->toBeTrue();
-        expect($master->supervisors)->toHaveCount(0);
+        expect($supervisor_process->dead)->toBeTrue()
+            ->and($master->supervisors)->toHaveCount(0);
     });
 
     test('Can create supervisors based on a config', function() {
@@ -78,8 +78,8 @@ describe('Master Supervisor', function () {
 
         $supervisor = SupervisorRepository::get(MasterSupervisor::name());
 
-        expect($supervisor->name)->toBe(MasterSupervisor::name());
-        expect($supervisor->status)->toBe('running');
+        expect($supervisor->name)->toBe(MasterSupervisor::name())
+            ->and($supervisor->status)->toBe('running');
     });
 
     test('Can terminate', function () {
@@ -102,8 +102,8 @@ describe('Master Supervisor', function () {
         $master->loop();
         $master->terminate();
 
-        expect($master->exited)->toBeTrue();
-        expect(SupervisorRepository::get(MasterSupervisor::name()))->toBeEmpty();
+        expect($master->exited)->toBeTrue()
+            ->and(SupervisorRepository::get(MasterSupervisor::name()))->toBeEmpty();
     });
 
     test('Can get longest running supervisor', function() {

@@ -10,7 +10,6 @@ use Mach3queue\Action\TimeoutJob;
 
 class WorkerActions
 {
-
     public function __construct(
         public RunJob $runJob = new RunJob,
         public CompleteJob $completeJob = new CompleteJob,

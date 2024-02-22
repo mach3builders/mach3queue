@@ -42,7 +42,7 @@ class ProcessPool implements Countable
         }
     }
 
-    private function scaleUp(int $process_amount)
+    private function scaleUp(int $process_amount): void
     {
         $difference = $process_amount - $this->processes->count();
 
@@ -51,7 +51,7 @@ class ProcessPool implements Countable
         }
     }
 
-    private function scaleDown(int $process_amount)
+    private function scaleDown(int $process_amount): void
     {
         $difference = $process_amount - $this->processes->count();
         $terminatingProcesses = $this->processes->slice(0, $difference);

@@ -30,8 +30,6 @@ describe('Worker', function () {
         $worker = new Worker($queue, $timeout, $actions, $options);
         $worker->run();
 
-        $job = Job::first();
-
         // check if the session timer is less than the timeout
         expect($_SESSION["start_time"] - $_SESSION["start_end"])->toBeLessThan($job_timer);
     });
@@ -46,8 +44,6 @@ describe('Worker', function () {
         $worker = new Worker($queue, 60, $actions, $options);
         $worker->run();
 
-        $job = Job::first();
-
-        expect($job->status())->toBe(Status::COMPLETED);
+        expect(Job::first()->status())->toBe(Status::COMPLETED);
     });
 });

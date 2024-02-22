@@ -45,12 +45,8 @@ class MasterSupervisor
 
     public function loop(): void
     {
-        try {
-            $this->processPendingSignals();
-            $this->monitorSupervisors();
-        } catch (Throwable $e) {
-            throw $e;
-        }
+        $this->processPendingSignals();
+        $this->monitorSupervisors();
 
         $this->updateRepository();
     }
@@ -65,14 +61,14 @@ class MasterSupervisor
         $this->rejectSupervisorsThatAreDead();
     }
 
-    public function handleOutputUsing(Closure $callback)
+    public function handleOutputUsing(Closure $callback): static
     {
         $this->output = $callback;
 
         return $this;
     }
     
-    public static function name()
+    public static function name(): string
     {
         static $token;
 
@@ -83,12 +79,12 @@ class MasterSupervisor
         return Str::slug(gethostname()).'-'.$token;
     }
 
-    public function pid()
+    public function pid(): false|int
     {
         return getmypid();
     }
 
-    public function memoryUsageInMb()
+    public function memoryUsageInMb(): float|int
     {
         return memory_get_usage() / 1024 / 1024;
     }
@@ -136,11 +132,6 @@ class MasterSupervisor
         );
         
         $this->supervisors->push($supervisor_process);
-    }
-
-    protected function exit(int $status = 0): void
-    {
-        exit($status);
     }
 
     private function createSupervisorsFromConfig(array $config): void
@@ -197,5 +188,10 @@ class MasterSupervisor
     private function updateRepository(): void
     {
         SupervisorRepository::updateOrCreateMaster($this);
+    }
+
+    protected function exit(int $status = 0): void
+    {
+        exit($status);
     }
 }

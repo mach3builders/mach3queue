@@ -2,6 +2,7 @@
 
 namespace Mach3queue\Console;
 
+use Exception;
 use Mach3queue\Supervisor\MasterSupervisor;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,6 +23,9 @@ class QueueCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * @throws Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
@@ -36,13 +40,16 @@ class QueueCommand extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * @throws Exception
+     */
     private function validateConfig(): void
     {
         if (isset($this->config['queue'])) {
             return;
         }
 
-        throw new \Exception('Queue configuration is missing.');
+        throw new Exception('Queue configuration is missing.');
     }
 
     private function createNewMaster(OutputInterface $output): void

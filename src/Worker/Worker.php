@@ -4,7 +4,6 @@ namespace Mach3queue\Worker;
 
 use Mach3queue\Job\Job;
 use Mach3queue\Queue\Queue;
-use Mach3queue\Worker\AsyncSignal;
 
 class Worker
 {
@@ -13,10 +12,10 @@ class Worker
     private bool $should_quit = false;
 
     public function __construct(
-        private Queue $queue, 
-        private int $timeout = 60,
-        private WorkerActions $actions = new WorkerActions,
-        private WorkerOptions $options = new WorkerOptions,
+        private readonly Queue $queue,
+        private readonly int $timeout = 60,
+        private readonly WorkerActions $actions = new WorkerActions,
+        private readonly WorkerOptions $options = new WorkerOptions,
     ) {
     }
 

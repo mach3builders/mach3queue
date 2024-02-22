@@ -4,14 +4,18 @@ namespace Mach3queue\Console;
 
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Exception\ExceptionInterface;
 
-class Console
+readonly class Console
 {
     public function __construct(private array $config)
     {
     }
 
-    public function handle(array $argv)
+    /**
+     * @throws ExceptionInterface
+     */
+    public function handle(array $argv): void
     {
         $params = $argv;
         unset($params[1]);

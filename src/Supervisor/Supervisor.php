@@ -1,12 +1,12 @@
 <?php
 
-namespace Mach3queue\SuperVisor;
+namespace Mach3queue\Supervisor;
 
 use Carbon\CarbonImmutable;
 use Closure;
 use Illuminate\Support\Collection;
 use Mach3queue\ListensForSignals;
-use Mach3queue\Supervisor\AutoScaler;
+use Mach3queue\Supervisor\AutoScalar;
 use Mach3queue\Supervisor\ProcessPool;
 use Mach3queue\Supervisor\SupervisorOptions;
 use Mach3queue\Supervisor\SupervisorRepository;
@@ -27,14 +27,14 @@ class Supervisor
 
     public CarbonImmutable $last_auto_scaled;
 
-    public AutoScaler $auto_scaler;
+    public AutoScalar $auto_scalar;
 
     public function __construct(
         SupervisorOptions $options,
-        AutoScaler $auto_scaler = new AutoScaler
+        AutoScalar $auto_scalar = new AutoScalar
     ) {
         $this->options = $options;
-        $this->auto_scaler = $auto_scaler;
+        $this->auto_scalar = $auto_scalar;
         $this->name = $options->toSupervisorName();
         $this->process_pool = $this->createProcessPool();
         $this->output = fn() => null;
@@ -106,7 +106,7 @@ class Supervisor
         return $this->process_pool->terminatingProcesses();
     }
 
-    public function pid()
+    public function pid(): bool|int
     {
         return getmypid();
     }
@@ -122,7 +122,7 @@ class Supervisor
 
         if ($this->timePassedForAutoScale()) {
             $this->last_auto_scaled = CarbonImmutable::now();
-            $this->auto_scaler->scale($this);
+//            $this->auto_scalar->scale($this);
         }
     }
 
@@ -150,7 +150,7 @@ class Supervisor
         });
     }
 
-    protected function exit(int $status = 0)
+    protected function exit(int $status = 0): void
     {
         exit($status);
     }

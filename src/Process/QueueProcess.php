@@ -3,6 +3,7 @@
 namespace Mach3queue\Process;
 
 use Closure;
+use Exception;
 use Symfony\Component\Process\Process;
 
 class QueueProcess
@@ -17,7 +18,7 @@ class QueueProcess
         $this->output = $output ?: fn() => null;
     }
 
-    protected function restart()
+    protected function restart(): void
     {
         $this->start($this->output);
     }
@@ -29,22 +30,31 @@ class QueueProcess
         $this->process->start($callback);
     }
 
-    public function pause()
+    /**
+     * @throws Exception
+     */
+    public function pause(): void
     {
         $this->sendSignal(SIGUSR2);
     }
 
-    public function continue()
+    /**
+     * @throws Exception
+     */
+    public function continue(): void
     {
         $this->sendSignal(SIGCONT);
     }
 
-    public function terminate()
+    /**
+     * @throws Exception
+     */
+    public function terminate(): void
     {
         $this->sendSignal(SIGTERM);
     }
 
-    public function stop()
+    public function stop(): void
     {
         if (!$this->process->isRunning()) {
             return;
@@ -58,18 +68,21 @@ class QueueProcess
         return microtime(true) - $this->process->getLastOutputTime();
     }
 
-    private function sendSignal(int $signal)
+    /**
+     * @throws Exception
+     */
+    private function sendSignal(int $signal): void
     {
         try {
             $this->process->signal($signal);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($this->process->isRunning()) {
                 throw $e;
             }
         }
     }
 
-    public function handleOutputUsing(Closure $callback)
+    public function handleOutputUsing(Closure $callback): static
     {
         $this->output = $callback;
 

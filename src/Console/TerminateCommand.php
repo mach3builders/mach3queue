@@ -15,6 +15,12 @@ class TerminateCommand extends Command
 
         $masters = SupervisorRepository::allMasters();
 
+        if (!count($masters)) {
+            $output->writeln('<info>No queue masters found.</info>');
+
+            return Command::SUCCESS;
+        }
+
         foreach ($masters as $master) {
             $output->writeln("<info>Sending TERM signal to process {$master->pid}.</info>");
 

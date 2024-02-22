@@ -4,7 +4,7 @@ namespace Mach3queue\Supervisor;
 
 use Mach3queue\SuperVisor\Supervisor;
 
-class AutoScaler
+class AutoScalar
 {
     public function scale(Supervisor $supervisor): void
     {

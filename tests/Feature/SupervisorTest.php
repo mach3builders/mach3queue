@@ -22,8 +22,8 @@ describe('Supervisor', function () {
 
         $supervisor->terminate();
         
-        expect($supervisor->exited)->toBeTrue();
-        expect(SupervisorRepository::get($supervisor->name))->toBeNull();
+        expect($supervisor->exited)->toBeTrue()
+            ->and(SupervisorRepository::get($supervisor->name))->toBeNull();
     });
 
     test('can start worker process', function () {
@@ -56,8 +56,8 @@ describe('Supervisor', function () {
         $supervisor->scale(1);
         $supervisor->loop();
 
-        expect($supervisor->processes()->count())->toBe(1);
-        expect($supervisor->terminatingProcesses()->count())->toBe(1);
+        expect($supervisor->processes()->count())->toBe(1)
+            ->and($supervisor->terminatingProcesses()->count())->toBe(1);
     });
 
     // test('can auto scale process pool', function () {
@@ -77,7 +77,7 @@ function supervisorOptions(): SupervisorOptions
     return new SupervisorOptions(
         maxProcesses: 5,
         minProcesses: 2,
-        balanceCooldown: 1,
         directory: realpath(__DIR__.'/../'),
+        balanceCooldown: 1,
     );
 }

@@ -24,8 +24,8 @@ function createProcess(): Process
     $command = WorkerCommandString::fromOptions($options);
 
     return Process::fromShellCommandline($command, $options->directory)
-            ->setTimeout(null)
-            ->disableOutput();
+        ->setTimeout(null)
+        ->disableOutput();
 }
 
 function supervisorOptions(): SupervisorOptions
@@ -35,7 +35,7 @@ function supervisorOptions(): SupervisorOptions
     return new SupervisorOptions(
         maxProcesses: 5,
         minProcesses: 2,
-        balanceCooldown: 1,
         directory: realpath(__DIR__.'/../'),
+        balanceCooldown: 1,
     );
 }

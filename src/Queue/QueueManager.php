@@ -2,16 +2,17 @@
 
 namespace Mach3queue\Queue;
 
-use Mach3queue\Queue\Queue;
-
+/**
+ * @method static addJob(Queueable $job, int $delay=0, int $priority=1024, int $time_to_retry=60)
+ * @method static getNextJob()
+ * @method static deleteJob(int $id)
+ * @method static on(string $string)
+ * @method static pipelines(string[] $array)
+ * @method setConnection(string[] $array)
+ */
 class QueueManager
 {
-    /**
-     * The current globally used instance.
-     *
-     * @var object
-     */
-    protected static $instance;
+    protected static QueueManager $instance;
 
     protected Queue $queue;
 
@@ -20,12 +21,7 @@ class QueueManager
         $this->queue = new Queue;
     }
 
-    /**
-     * Make this capsule instance available globally.
-     *
-     * @return void
-     */
-    public function setAsGlobal()
+    public function setAsGlobal(): void
     {
         static::$instance = $this;
     }
@@ -35,26 +31,12 @@ class QueueManager
         return $this->queue;
     }
 
-    /**
-     * Pass dynamic instance methods to the manager.
-     *
-     * @param  string  $method
-     * @param  array  $parameters
-     * @return mixed
-     */
-    public function __call($method, $parameters)
+    public function __call(string $method, array $parameters)
     {
         return $this->queue->$method(...$parameters);
     }
 
-    /**
-     * Dynamically pass methods to the default connection.
-     *
-     * @param  string  $method
-     * @param  array  $parameters
-     * @return mixed
-     */
-    public static function __callStatic($method, $parameters)
+    public static function __callStatic(string $method, array $parameters)
     {
         return static::$instance->$method(...$parameters);
     }

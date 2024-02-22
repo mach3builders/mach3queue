@@ -9,7 +9,9 @@
     },
     "require": {
         "illuminate/database": "^10.43",
-        "symfony/process": "^7.0"
+        "symfony/process": "^7.0",
+        "ext-pcntl": "*",
+        "ext-posix": "*"
     },
     "require-dev": {
         "pestphp/pest": "^2.33",
