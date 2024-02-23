@@ -28,18 +28,19 @@ class SupervisorRepository
 
     public static function updateOrCreate(Supervisor $supervisor): void
     {
+        $match = [
+            'name' => 'supervisor:'.$supervisor->name
+        ];
         $data = [
             'master' => implode(':', explode(':', $supervisor->name, -1)),
             'pid' => $supervisor->pid(),
             'status' => $supervisor->working ? 'running' : 'paused',
             'processes' => count($supervisor->process_pool),
             'options' => $supervisor->options->toJson(),
-        ];
-        $match = [
-            'name' => 'supervisor:'.$supervisor->name
+            'updated_at' => CarbonImmutable::now(),
         ];
 
-        DB::table(self::TABLE)->updateOrInsert($data, $match);
+        DB::table(self::TABLE)->updateOrInsert($match, $data);
     }
 
     public static function updateOrCreateMaster(MasterSupervisor $master): void
