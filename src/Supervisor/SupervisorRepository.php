@@ -63,4 +63,11 @@ class SupervisorRepository
             ->get()
             ->toArray();
     }
+
+    public static function all(): array
+    {
+        return DB::table(self::TABLE)
+            ->get()
+            ->toArray();
+    }
 }

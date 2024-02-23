@@ -8,6 +8,8 @@ use Symfony\Component\Process\Process;
 
 class SupervisorProcess extends QueueProcess
 {
+    public string $name;
+
     public bool $dead = false;
 
     public SupervisorOptions $options;
@@ -18,6 +20,7 @@ class SupervisorProcess extends QueueProcess
         Closure $output = null
     ) {
         $this->options = $options;
+        $this->name = $options->name;
 
         parent::__construct($process, $output);
     }
