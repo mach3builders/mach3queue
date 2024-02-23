@@ -6,8 +6,8 @@ use Mach3queue\Job\Job;
 
 class TimeoutJob
 {
-    public function execute(Job $job): void
+    public function __invoke(Job $job): void
     {
-        (new BuryJob)->execute($job, Job::TIMEOUT_MESSAGE);
+        (new BuryJob)($job, Job::TIMEOUT_MESSAGE);
     }
 }

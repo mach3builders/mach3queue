@@ -9,7 +9,7 @@ class RunJob
     private Job $job;
     private mixed $action;
 
-    public function execute(Job $job): void
+    public function __invoke(Job $job): void
     {
         $this->job = $job;
         $this->action = unserialize($job->payload);

@@ -2,6 +2,7 @@
 
 namespace Mach3queue\Supervisor;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Capsule\Manager as DB;
 use Mach3queue\SuperVisor\Supervisor;
 
@@ -43,17 +44,18 @@ class SupervisorRepository
 
     public static function updateOrCreateMaster(MasterSupervisor $master): void
     {
-        $data = [
-            'pid' => $master->pid(),
-            'status' => $master->working ? 'running' : 'paused',
-            'processes' => count($master->supervisors),
-        ];
         $match = [
             'name' => $master->name,
             'master' => null
         ];
+        $data = [
+            'pid' => $master->pid(),
+            'status' => $master->working ? 'running' : 'paused',
+            'processes' => count($master->supervisors),
+            'updated_at' => CarbonImmutable::now(),
+        ];
 
-        DB::table(self::TABLE)->updateOrInsert($data, $match);
+        DB::table(self::TABLE)->updateOrInsert($match, $data);
     }
 
     public static function allMasters(): array

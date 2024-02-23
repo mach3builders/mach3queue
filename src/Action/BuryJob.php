@@ -11,7 +11,7 @@ class BuryJob
     private mixed $action;
     private string $message;
 
-    public function execute(Job $job, string $message): void
+    public function __invoke(Job $job, string $message): void
     {
         $this->job = $job;
         $this->action = unserialize($job->payload);

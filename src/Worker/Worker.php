@@ -36,8 +36,8 @@ class Worker
             }
 
             $this->registerTimeoutHandlerForJob(function() use ($job) {
-                $this->actions->timeoutJob->execute($job);
-                $this->actions->killWorker->execute();
+                $this->actions->timeoutJob($job);
+                $this->actions->killWorker();
             });
             
             $this->runJob($job);
@@ -94,10 +94,10 @@ class Worker
     private function runJob(Job $job): void
     {
         try {
-            $this->actions->runJob->execute($job);
-            $this->actions->completeJob->execute($job);
+            $this->actions->runJob($job);
+            $this->actions->completeJob($job);
         } catch(\Exception $e) {
-            $this->actions->buryJob->execute($job, $e->getMessage());
+            $this->actions->buryJob($job, $e->getMessage());
         }
     }
 }

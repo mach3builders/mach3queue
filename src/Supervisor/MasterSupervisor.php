@@ -24,17 +24,20 @@ class MasterSupervisor
 
     public string $name;
 
-    public function __construct(array $config)
+    public MasterActions $actions;
+
+    public function __construct(array $config, MasterActions $actions = new MasterActions)
     {
         $this->name = static::name();
         $this->supervisors = new Collection;
+        $this->actions = $actions;
         $this->createSupervisorsFromConfig($config);
     }
 
     public function monitor(): void
     {
         $this->listenForSignals();
-        $this->updateRepository();
+        $this->persist();
 
         while (true) {
             sleep(1);
@@ -48,7 +51,9 @@ class MasterSupervisor
         $this->processPendingSignals();
         $this->monitorSupervisors();
 
-        $this->updateRepository();
+        $this->persist();
+        $this->actions->expireSupervisors();
+
     }
 
     private function monitorSupervisors(): void
@@ -185,7 +190,7 @@ class MasterSupervisor
             ->gte($startedTerminating);
     }
 
-    private function updateRepository(): void
+    public function persist(): void
     {
         SupervisorRepository::updateOrCreateMaster($this);
     }

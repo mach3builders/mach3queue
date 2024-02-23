@@ -57,7 +57,7 @@ describe('Queue', function () {
     test('can bury job', function () {
         $job = Queue::addJob(new FakeEmptyQueueable);
         
-        (new BuryJob)->execute($job, 'test');
+        (new BuryJob)($job, 'test');
         
         $job->refresh();
 

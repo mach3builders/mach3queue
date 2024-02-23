@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\CarbonImmutable;
+use Mach3queue\Action\ExpireSupervisors;
 use Mach3queue\Process\SupervisorProcess;
 use Mach3queue\Supervisor\MasterSupervisor;
 use Mach3queue\Supervisor\SupervisorOptions;
@@ -121,4 +123,37 @@ describe('Master Supervisor', function () {
 
         expect($longest)->toBe(300);
     });
+
+    test('Can persist in the repository', function () {
+        $master = new MasterSupervisor([]);
+
+        $master->loop();
+
+        $date_1 = SupervisorRepository::get(MasterSupervisor::name())->updated_at;
+
+        advanceTimeByMinutes(2);
+
+        $master->loop();
+
+        $date_2 = SupervisorRepository::get(MasterSupervisor::name())->updated_at;
+
+        expect($date_1)->not->toBe($date_2);
+    });
+
+    test('Can remove expired supervisors', function () {
+        $master = new MasterSupervisor([]);
+
+        $master->loop();
+
+        advanceTimeByMinutes(2);
+
+        (new ExpireSupervisors())();
+
+        expect(SupervisorRepository::get(MasterSupervisor::name()))->toBeEmpty();
+    });
 });
+
+function advanceTimeByMinutes(int $minutes): void
+{
+    CarbonImmutable::setTestNow(CarbonImmutable::now()->addMinutes($minutes));
+}

@@ -12,7 +12,7 @@ describe('Job', function () {
         $job = new Job;
         $job->payload = serialize(new FakeEmptyQueueable);
     
-        (new RunJob)->execute($job);
+        (new RunJob)($job);
     
         expect(true)->toBeTrue();
     });

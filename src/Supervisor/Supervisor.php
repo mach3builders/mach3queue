@@ -61,7 +61,7 @@ class Supervisor
     public function monitor(): void
     {
         $this->listenForSignals();
-        $this->updateRepository();
+        $this->persist();
 
         while (true) {
             sleep(1);
@@ -78,7 +78,7 @@ class Supervisor
             $this->process_pool->monitor();
         }
 
-        $this->updateRepository();
+        $this->persist();
     }
 
     public function terminate(int $status = 0): void
@@ -111,7 +111,7 @@ class Supervisor
         return getmypid();
     }
 
-    private function updateRepository(): void
+    private function persist(): void
     {
         SupervisorRepository::updateOrCreate($this);
     }
