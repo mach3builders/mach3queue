@@ -7,7 +7,8 @@ use Mach3queue\Queue\Queue;
 
 class Worker
 {
-    const EXIT_ERROR = 1;
+    const int EXIT_ERROR = 1;
+    const int EXIT_MEMORY_LIMIT = 12;
 
     private bool $should_quit = false;
 
@@ -85,10 +86,16 @@ class Worker
     private function checkIfShouldStop(?Job $job = null): int
     {
         return match (true) {
-            $this->should_quit => self::EXIT_ERROR,
-            $this->options->stop_when_empty && empty($job) => self::EXIT_ERROR,
+            $this->memoryExceeded() => self::EXIT_MEMORY_LIMIT,
+            $this->should_quit, $this->options->stop_when_empty && empty($job) => self::EXIT_ERROR,
             default => 0,
         };
+    }
+
+    private function memoryExceeded(): bool
+    {
+        $memory = $this->options->memory;
+        return (memory_get_usage(true) / 1024 / 1024) >= $memory;
     }
 
     private function runJob(Job $job): void

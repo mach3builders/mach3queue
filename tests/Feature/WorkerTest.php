@@ -46,4 +46,18 @@ describe('Worker', function () {
 
         expect(Job::first()->status())->toBe(Status::COMPLETED);
     });
+
+    test('can run out of memory', function() {
+        $queue = $this->queue->getInstance();
+        $actions = new WorkerActions;
+        $options = new WorkerOptions(
+            stop_when_empty: true,
+            memory: 1
+        );
+
+        $worker = new Worker($queue, 60, $actions, $options);
+        $worker->run();
+
+        expect($worker->run())->toBe(Worker::EXIT_MEMORY_LIMIT);
+    });
 });
