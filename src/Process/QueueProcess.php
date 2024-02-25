@@ -26,7 +26,7 @@ class QueueProcess
     public function start(Closure $callback): void
     {
         $this->output = $callback;
-        
+
         $this->process->start($callback);
     }
 
@@ -66,6 +66,11 @@ class QueueProcess
     public function getIdleTime(): float
     {
         return microtime(true) - $this->process->getLastOutputTime();
+    }
+
+    public function isIdleFor(int $seconds): bool
+    {
+        return $this->getIdleTime() >= $seconds;
     }
 
     /**

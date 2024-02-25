@@ -29,12 +29,10 @@ class ProcessPool implements Countable
 
     public function scale(int $process_amount): void
     {
-        $process_amount = max(0, $process_amount);
-        
-        if ($process_amount === $this->processes->count()) {
+        if ($process_amount == $this->processes->count()) {
             return;
         }
-        
+
         if ($process_amount > $this->processes->count()) {
             $this->scaleUp($process_amount);
         } else {
@@ -53,7 +51,7 @@ class ProcessPool implements Countable
 
     private function scaleDown(int $process_amount): void
     {
-        $difference = $process_amount - $this->processes->count();
+        $difference = $this->processes->count() - $process_amount;
         $terminatingProcesses = $this->processes->slice(0, $difference);
 
         foreach ($terminatingProcesses as $process) {
@@ -126,5 +124,12 @@ class ProcessPool implements Countable
     public function runningProcesses(): Collection
     {
         return $this->processes->filter->isRunning();
+    }
+
+    public function idleProcesses(): Collection
+    {
+        $cooldown = $this->options->balanceCooldown;
+
+        return $this->processes->filter->isIdleFor($cooldown);
     }
 }

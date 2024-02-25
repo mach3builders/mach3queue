@@ -4,7 +4,6 @@ namespace Mach3queue\Supervisor;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Capsule\Manager as DB;
-use Mach3queue\SuperVisor\Supervisor;
 
 class SupervisorRepository
 {

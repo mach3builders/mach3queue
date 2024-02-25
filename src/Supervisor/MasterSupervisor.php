@@ -53,7 +53,7 @@ class MasterSupervisor
 
         $this->persist();
         $this->actions->expireSupervisors();
-
+        $this->actions->trimOldJobs();
     }
 
     private function monitorSupervisors(): void

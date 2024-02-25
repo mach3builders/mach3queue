@@ -13,6 +13,7 @@ class SupervisorOptions
         public int $minProcesses = 1,
         public string $directory = __DIR__,
         public int $balanceCooldown = 5,
+        public int $maxWorkload = 5,
     ) {
     }
 

@@ -77,6 +77,19 @@ class Job extends Model
             ->where('time_to_retry_dt', '<=', Carbon::now());
     }
 
+    public function scopeWhereIsOld(Builder $query): void
+    {
+        $query->where('created_at', '>', Carbon::now()->subDay());
+    }
+
+    public function scopeWhereIsDone(Builder $query): void
+    {
+        $query->where(function ($query) {
+            $query->where('is_complete', 1)
+                ->orWhere('is_buried', 1);
+        });
+    }
+
     public function status(): Status
     {
         if ($this->is_complete == 1) {

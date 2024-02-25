@@ -83,6 +83,11 @@ class Queue
         return $job;
 	}
 
+    public function getTotalJobsInQueue(): int
+    {
+        return Job::nextJobForPipeLines($this->getPipelines())->count();
+    }
+
     private function getPipelines(): array
     {
         return $this->pipelines ?: [$this->queue];

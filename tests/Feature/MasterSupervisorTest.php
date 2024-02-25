@@ -1,5 +1,6 @@
 <?php
 
+use Mach3queue\Job\Job;
 use Carbon\CarbonImmutable;
 use Mach3queue\Supervisor\Supervisor;
 use Mach3queue\Action\ExpireSupervisors;
@@ -155,9 +156,31 @@ describe('Master Supervisor', function () {
         expect(SupervisorRepository::get($master->name))->toBeEmpty()
             ->and(SupervisorRepository::get($supervisor->name))->toBeEmpty();
     });
+
+    test('Can trim old jobs', function () {
+        createCompletedJobAtTime(CarbonImmutable::now());
+        createCompletedJobAtTime(CarbonImmutable::now()->subHours(25));
+
+        $master = new MasterSupervisor([]);
+        $master->loop();
+
+        expect(Job::count())->toBe(1);
+    });
 });
 
 function advanceTimeByMinutes(int $minutes): void
 {
     CarbonImmutable::setTestNow(CarbonImmutable::now()->addMinutes($minutes));
+}
+
+function createCompletedJobAtTime(CarbonImmutable $time): void
+{
+    $job = new Job;
+    $job->queue = 'default';
+    $job->payload = '';
+    $job->added_dt = $time;
+    $job->send_dt = $time;
+    $job->is_complete = true;
+    $job->created_at = $time;
+    $job->save();
 }

@@ -2,7 +2,7 @@
 
 namespace Mach3queue\Console;
 
-use Mach3queue\Queue\Queue;
+use Mach3queue\Queue\QueueManager as Queue;
 use Mach3queue\SuperVisor\Supervisor;
 use Mach3queue\Supervisor\SupervisorOptions;
 use Symfony\Component\Console\Command\Command;
@@ -13,6 +13,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SupervisorCommand extends Command
 {
+    private array $config;
+
+    public function __construct(array $config)
+    {
+        $this->config = $config;
+
+        parent::__construct();
+    }
+
     protected function configure(): void
     {
         $this->setDefinition(
@@ -28,6 +37,7 @@ class SupervisorCommand extends Command
     
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->createQueue($input);
         $options = $this->getSupervisorOptions($input);
         $supervisor = new Supervisor($options);
         $supervisor->handleOutputUsing(fn($_, $line) => $output->write($line));
@@ -35,6 +45,22 @@ class SupervisorCommand extends Command
         $supervisor->monitor();
 
         return Command::SUCCESS;
+    }
+
+    private function createQueue(InputInterface $input): void
+    {
+        $queue_names = $this->getQueueNames($input);
+
+        $queue = new Queue;
+        $queue->pipelines($queue_names);
+        $queue->setConnection([
+            'driver' => $this->config['db_driver'] ?? 'mysql',
+            'host' => $this->config['db_host'],
+            'database' => $this->config['db_name'],
+            'username' => $this->config['db_user'],
+            'password' => $this->config['db_pass'],
+        ]);
+        $queue->setAsGlobal();
     }
 
     private function getSupervisorOptions(InputInterface $input): SupervisorOptions

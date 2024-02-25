@@ -6,10 +6,6 @@ use Carbon\CarbonImmutable;
 use Closure;
 use Illuminate\Support\Collection;
 use Mach3queue\ListensForSignals;
-use Mach3queue\Supervisor\AutoScalar;
-use Mach3queue\Supervisor\ProcessPool;
-use Mach3queue\Supervisor\SupervisorOptions;
-use Mach3queue\Supervisor\SupervisorRepository;
 
 class Supervisor
 {
@@ -42,10 +38,10 @@ class Supervisor
 
     public function scale(int $processes): void
     {
-        $processes = max(0, $processes);
-        $processes = min($processes, $this->options->maxProcesses);
-        
-        $this->process_pool->scale($processes);
+        $min = $this->options->minProcesses;
+        $max = $this->options->maxProcesses;
+
+        $this->process_pool->scale(max($min, min($max, $processes)));
     }
 
     public function handleOutputUsing(Closure $callback): void
@@ -53,7 +49,7 @@ class Supervisor
         $this->output = $callback;
     }
 
-    public function output($type, $line)
+    public function output($type, $line): void
     {
         call_user_func($this->output, $type, $line);
     }
@@ -74,7 +70,7 @@ class Supervisor
         $this->processPendingSignals();
 
         if ($this->working) {
-            // TODO: Implement auto scale method
+            $this->autoScale();
             $this->process_pool->monitor();
         }
 
@@ -122,7 +118,7 @@ class Supervisor
 
         if ($this->timePassedForAutoScale()) {
             $this->last_auto_scaled = CarbonImmutable::now();
-//            $this->auto_scalar->scale($this);
+            $this->auto_scalar->scale($this);
         }
     }
 

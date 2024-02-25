@@ -9,6 +9,7 @@ namespace Mach3queue\Queue;
  * @method static on(string $string)
  * @method static pipelines(string[] $array)
  * @method setConnection(string[] $array)
+ * @method static getTotalJobsInQueue()
  */
 class QueueManager
 {

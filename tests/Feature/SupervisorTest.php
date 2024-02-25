@@ -1,5 +1,8 @@
 <?php
 
+use Carbon\CarbonImmutable;
+use Mach3queue\Queue\FakeEmptyQueueable;
+use Mach3queue\Queue\QueueManager as Queue;
 use Mach3queue\SuperVisor\Supervisor;
 use Mach3queue\Supervisor\SupervisorOptions;
 use Mach3queue\Supervisor\SupervisorRepository;
@@ -60,14 +63,36 @@ describe('Supervisor', function () {
             ->and($supervisor->terminatingProcesses()->count())->toBe(1);
     });
 
-    // test('can auto scale process pool', function () {
-    //     $options = supervisorOptions();
-    //     $supervisor = new Supervisor($options);
+     test('can auto scale process pool down', function () {
+         $options = supervisorOptions();
+         $supervisor = new Supervisor($options);
 
-    //     $supervisor->loop();
+         $supervisor->scale($options->maxProcesses);
+         $supervisor->loop();
 
-    //     expect($supervisor->processes()->count())->toBe(2);
-    // });
+         advanceTimeBySeconds(1);
+
+         $supervisor->loop();
+
+         expect($supervisor->processes()->count())->toBe(4);
+     });
+
+     test('can autoscale process pool up', function () {
+         $options = supervisorOptions();
+         $supervisor = new Supervisor($options);
+
+         $supervisor->scale(2);
+         $supervisor->loop();
+
+         for ($i = 0; $i < 20; $i++) {
+            Queue::addJob(new FakeEmptyQueueable);
+         }
+
+         advanceTimeBySeconds(1);
+         $supervisor->loop();
+
+         expect($supervisor->processes()->count())->toBe(3);
+     });
 });
 
 function supervisorOptions(): SupervisorOptions
@@ -79,5 +104,16 @@ function supervisorOptions(): SupervisorOptions
         minProcesses: 2,
         directory: realpath(__DIR__.'/../'),
         balanceCooldown: 1,
+        maxWorkload: 5,
     );
+}
+
+function advanceTimeByMinutes(int $minutes): void
+{
+    CarbonImmutable::setTestNow(CarbonImmutable::now()->addMinutes($minutes));
+}
+
+function advanceTimeBySeconds(int $seconds): void
+{
+    CarbonImmutable::setTestNow(CarbonImmutable::now()->addSeconds($seconds));
 }
