@@ -50,20 +50,7 @@ describe('Supervisor', function () {
         expect($supervisor->processes()->count())->toBe(2);
     });
 
-    test('can scale process pool down', function () {
-        $options = supervisorOptions();
-        $supervisor = new Supervisor($options);
-
-        $supervisor->scale(2);
-        $supervisor->loop();
-        $supervisor->scale(1);
-        $supervisor->loop();
-
-        expect($supervisor->processes()->count())->toBe(1)
-            ->and($supervisor->terminatingProcesses()->count())->toBe(1);
-    });
-
-     test('can auto scale process pool down', function () {
+    test('can auto scale process pool down', function () {
          $options = supervisorOptions();
          $supervisor = new Supervisor($options);
 

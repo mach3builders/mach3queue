@@ -29,8 +29,7 @@ describe('Master Supervisor', function () {
     });
 
     test('Can clean up dead supervisor process', function () {
-        $master = new MasterSupervisor([
-        ]);
+        $master = new MasterSupervisor(trimOptions());
         $process = Mockery::mock(Process::class);
         $master->addSupervisorProcess(new SupervisorOptions, $process);
         $supervisor_process = $master->supervisors[0];
@@ -46,18 +45,20 @@ describe('Master Supervisor', function () {
 
     test('Can create supervisors based on a config', function() {
         $config = [
-            'supervisor-1' => [
-                'queue' => ['default'],
-                'max_processes' => 5,
-                'timeout' => 60,
-                'directory' => realpath(__DIR__.'/../'),
-            ],
-            'supervisor-2' => [
-                'queue' => ['ai', 'export'],
-                'max_processes' => 3,
-                'timeout' => 60,
-                'directory' => realpath(__DIR__.'/../'),
-            ],
+            'supervisors' => [
+                'supervisor-1' => [
+                    'queue' => ['default'],
+                    'max_processes' => 5,
+                    'timeout' => 60,
+                    'directory' => realpath(__DIR__.'/../'),
+                ],
+                'supervisor-2' => [
+                    'queue' => ['ai', 'export'],
+                    'max_processes' => 3,
+                    'timeout' => 60,
+                    'directory' => realpath(__DIR__.'/../'),
+                ],
+            ]
         ];
 
         $master = new MasterSupervisor($config);
@@ -78,7 +79,7 @@ describe('Master Supervisor', function () {
     });
 
     test('Can be found in repository', function() {
-        $master = new MasterSupervisor([]);
+        $master = new MasterSupervisor(trimOptions());
         $master->loop();
 
         $supervisor = SupervisorRepository::get(MasterSupervisor::name());
@@ -89,17 +90,23 @@ describe('Master Supervisor', function () {
 
     test('Can terminate', function () {
         $config = [
-            'supervisor-1' => [
-                'queue' => ['default'],
-                'max_processes' => 5,
-                'timeout' => 60,
-                'directory' => realpath(__DIR__.'/../'),
+            'trim' => [
+                'completed' => 60,
+                'failed' => 10080,
             ],
-            'supervisor-2' => [
-                'queue' => ['ai', 'export'],
-                'max_processes' => 3,
-                'timeout' => 60,
-                'directory' => realpath(__DIR__.'/../'),
+            'supervisors' => [
+                'supervisor-1' => [
+                    'queue' => ['default'],
+                    'max_processes' => 5,
+                    'timeout' => 60,
+                    'directory' => realpath(__DIR__.'/../'),
+                ],
+                'supervisor-2' => [
+                    'queue' => ['ai', 'export'],
+                    'max_processes' => 3,
+                    'timeout' => 60,
+                    'directory' => realpath(__DIR__.'/../'),
+                ],
             ],
         ];
 
@@ -113,11 +120,17 @@ describe('Master Supervisor', function () {
 
     test('Can get longest running supervisor', function() {
         $config = [
-            'supervisor-1' => [
-                'queue' => ['default'],
-                'max_processes' => 1,
-                'timeout' => 300,
-                'directory' => realpath(__DIR__.'/../'),
+            'trim' => [
+                'completed' => 60,
+                'failed' => 10080,
+            ],
+            'supervisors' => [
+                'supervisor-1' => [
+                    'queue' => ['default'],
+                    'max_processes' => 1,
+                    'timeout' => 300,
+                    'directory' => realpath(__DIR__.'/../'),
+                ],
             ],
         ];
 
@@ -128,7 +141,7 @@ describe('Master Supervisor', function () {
     });
 
     test('Can persist in the repository', function () {
-        $master = new MasterSupervisor([]);
+        $master = new MasterSupervisor(trimOptions());
 
         $master->loop();
 
@@ -144,7 +157,7 @@ describe('Master Supervisor', function () {
     });
 
     test('Can remove expired supervisors', function () {
-        $master = new MasterSupervisor([]);
+        $master = new MasterSupervisor(trimOptions());
         $supervisor = new Supervisor(new SupervisorOptions);
 
         $master->loop();
@@ -173,6 +186,16 @@ describe('Master Supervisor', function () {
         expect(Job::count())->toBe(1);
     });
 });
+
+function trimOptions(): array
+{
+    return [
+        'trim' => [
+            'completed' => 60,
+            'failed' => 10080,
+        ],
+    ];
+}
 
 function advanceTimeByMinutes(int $minutes): void
 {
