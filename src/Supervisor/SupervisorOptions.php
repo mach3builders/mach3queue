@@ -11,7 +11,7 @@ class SupervisorOptions
         public int $timeout = 60,
         public int $maxProcesses = 1,
         public int $minProcesses = 1,
-        public string $directory = __DIR__,
+        public string $directory = '',
         public int $balanceCooldown = 5,
         public int $maxWorkload = 5,
     ) {
@@ -25,9 +25,14 @@ class SupervisorOptions
             timeout: $config['timeout'] ?? 60,
             maxProcesses: $config['max_processes'] ?? 1,
             minProcesses: $config['min_processes'] ?? 1,
-            directory: $config['directory'] ?? __DIR__,
+            directory: $config['directory'] ?? self::binDir(),
             balanceCooldown: $config['balance_cooldown'] ?? 5,
         );
+    }
+
+    public static function binDir(): string
+    {
+        return realpath(__DIR__.'/../../vendor/bin');
     }
 
     public function toSupervisorCommand(): string

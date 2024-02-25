@@ -26,8 +26,13 @@ class MasterSupervisor
 
     public MasterActions $actions;
 
-    public function __construct(array $config, MasterActions $actions = new MasterActions)
-    {
+    public array $config;
+
+    public function __construct(
+        array $config,
+        MasterActions $actions = new MasterActions
+    ) {
+        $this->config = $config;
         $this->name = static::name();
         $this->supervisors = new Collection;
         $this->actions = $actions;
@@ -53,7 +58,7 @@ class MasterSupervisor
 
         $this->persist();
         $this->actions->expireSupervisors();
-        $this->actions->trimOldJobs();
+        $this->actions->trimOldJobs($this->config);
     }
 
     private function monitorSupervisors(): void
@@ -87,11 +92,6 @@ class MasterSupervisor
     public function pid(): false|int
     {
         return getmypid();
-    }
-
-    public function memoryUsageInMb(): float|int
-    {
-        return memory_get_usage() / 1024 / 1024;
     }
 
     public function restart(): void

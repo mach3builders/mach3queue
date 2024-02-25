@@ -161,7 +161,12 @@ describe('Master Supervisor', function () {
         createCompletedJobAtTime(CarbonImmutable::now());
         createCompletedJobAtTime(CarbonImmutable::now()->subHours(25));
 
-        $master = new MasterSupervisor([]);
+        $master = new MasterSupervisor([
+            'trim' => [
+                'completed' => 60,
+                'failed' => 10080,
+            ],
+        ]);
         $master->loop();
 
         expect(Job::count())->toBe(1);

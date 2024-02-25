@@ -7,7 +7,7 @@ use Mach3queue\Action\ExpireSupervisors;
 
 /**
  * @method expireSupervisors()
- * @method trimOldJobs()
+ * @method trimOldJobs(array $config)
  */
 class MasterActions
 {
