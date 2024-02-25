@@ -5,6 +5,24 @@ use Mach3queue\Console\Console;
 
 /*
 |--------------------------------------------------------------------------
+| Copy the config file over
+|--------------------------------------------------------------------------
+|
+| If there is no config file, copy it over from the package.
+|
+*/
+
+$source = __DIR__.'/../../queue.php';
+$destination = __DIR__.'/../../../queue.php';
+
+if (file_exists($destination)) {
+    return;
+}
+
+copy($source, $destination);
+
+/*
+|--------------------------------------------------------------------------
 | Config file
 |--------------------------------------------------------------------------
 |
