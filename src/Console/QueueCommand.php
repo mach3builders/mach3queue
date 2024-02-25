@@ -29,7 +29,6 @@ class QueueCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
-        $this->validateConfig();
         $this->createNewMaster($output);
         $this->listenForInterruption();
 
@@ -40,22 +39,10 @@ class QueueCommand extends Command
         return Command::SUCCESS;
     }
 
-    /**
-     * @throws Exception
-     */
-    private function validateConfig(): void
-    {
-        if (isset($this->config['queue'])) {
-            return;
-        }
-
-        throw new Exception('Queue configuration is missing.');
-    }
-
     private function createNewMaster(OutputInterface $output): void
     {
         $callable = fn($_, $line) => $output->write($line);
-        $this->master = new MasterSupervisor($this->config['queue']);
+        $this->master = new MasterSupervisor($this->config);
         $this->master->handleOutputUsing($callable);
     }
 
