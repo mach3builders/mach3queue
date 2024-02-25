@@ -141,7 +141,7 @@ class MasterSupervisor
 
     private function createSupervisorsFromConfig(array $config): void
     {
-        foreach ($config as $supervisor => $options) {
+        foreach ($config['supervisors'] as $supervisor => $options) {
             $supervisor_options = CreateSupervisorOptionFromConfig::create(
                 $this,
                 $supervisor,

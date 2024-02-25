@@ -29,7 +29,8 @@ describe('Master Supervisor', function () {
     });
 
     test('Can clean up dead supervisor process', function () {
-        $master = new MasterSupervisor([]);
+        $master = new MasterSupervisor([
+        ]);
         $process = Mockery::mock(Process::class);
         $master->addSupervisorProcess(new SupervisorOptions, $process);
         $supervisor_process = $master->supervisors[0];
