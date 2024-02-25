@@ -12,14 +12,12 @@ use Mach3queue\Console\Console;
 |
 */
 
-$source = __DIR__.'/../../queue.php';
+$source = __DIR__.'/config/queue.php';
 $destination = __DIR__.'/../../../queue.php';
 
-if (file_exists($destination)) {
-    return;
+if (!file_exists($destination)) {
+    copy($source, $destination);
 }
-
-copy($source, $destination);
 
 /*
 |--------------------------------------------------------------------------
@@ -30,12 +28,7 @@ copy($source, $destination);
 |
 */
 
-$config = require __DIR__.'/../../../queue.php';
-
-if (!(file_exists($config))) {
-    fwrite(STDERR, 'Failed to load config file.'.PHP_EOL);
-    exit(1);
-}
+$config = require  __DIR__.'/../../../queue.php';
 
 /*
 |--------------------------------------------------------------------------
