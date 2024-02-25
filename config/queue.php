@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'bootstrap' => realpath(__DIR__.'./vendor/autoload.php'),
+    'bootstrap' => './vendor/autoload.php',
 
     /*
     |--------------------------------------------------------------------------
