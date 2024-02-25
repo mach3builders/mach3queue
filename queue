@@ -1,0 +1,47 @@
+#!/usr/bin/env php
+<?php
+
+use Mach3queue\Console\Console;
+
+/*
+|--------------------------------------------------------------------------
+| Config file
+|--------------------------------------------------------------------------
+|
+| Load the config file that is needed for the queue to work.
+|
+*/
+
+$config = require __DIR__.'/../../../queue.php';
+
+if (!(file_exists($config))) {
+    fwrite(STDERR, 'Failed to load config file.'.PHP_EOL);
+    exit(1);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Bootstrap
+|--------------------------------------------------------------------------
+|
+| Bootstrap the application, this is needed to load the environment.
+|
+*/
+
+$bootstrap = $config['bootstrap'];
+
+if (!(file_exists($bootstrap) && include $bootstrap)) {
+    fwrite(STDERR, 'Failed to load bootstrap.'.PHP_EOL);
+    exit(1);
+}
+
+/*
+|--------------------------------------------------------------------------
+| Console
+|--------------------------------------------------------------------------
+|
+| The console that runs the whole application.
+|
+*/
+
+(new Console($config))->handle($argv);
