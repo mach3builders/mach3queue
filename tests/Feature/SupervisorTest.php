@@ -1,10 +1,8 @@
 <?php
 
-use Carbon\CarbonImmutable;
 use Mach3queue\Queue\FakeEmptyQueueable;
 use Mach3queue\Queue\QueueManager as Queue;
 use Mach3queue\SuperVisor\Supervisor;
-use Mach3queue\Supervisor\SupervisorOptions;
 use Mach3queue\Supervisor\SupervisorRepository;
 use Mach3queue\Supervisor\WorkerCommandString;
 use Tests\Feature\Fakes\SupervisorWithFakeExit;
@@ -62,9 +60,9 @@ describe('Supervisor', function () {
          $supervisor->loop();
 
          expect($supervisor->processes()->count())->toBe(4);
-     });
+    });
 
-     test('can autoscale process pool up', function () {
+    test('can autoscale process pool up', function () {
          $options = supervisorOptions();
          $supervisor = new Supervisor($options);
 
@@ -79,5 +77,5 @@ describe('Supervisor', function () {
          $supervisor->loop();
 
          expect($supervisor->processes()->count())->toBe(3);
-     });
+    });
 });

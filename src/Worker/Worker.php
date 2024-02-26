@@ -28,6 +28,7 @@ class Worker
             $job = $this->queue->getNextJob();
 
             if ($stop = $this->checkIfShouldStop($job)) {
+                $this->handleStop($stop, $job);
                 return $stop;
             }
             
@@ -87,15 +88,23 @@ class Worker
     {
         return match (true) {
             $this->memoryExceeded() => self::EXIT_MEMORY_LIMIT,
-            $this->should_quit, $this->options->stop_when_empty && empty($job) => self::EXIT_ERROR,
+            $this->stopWhenEmpty($job) => self::EXIT_ERROR,
+            $this->should_quit => self::EXIT_ERROR,
             default => 0,
+        };
+    }
+
+    private function handleStop(int $stop, ?Job $job): void
+    {
+        match ($stop) {
+            self::EXIT_ERROR => null,
+            self::EXIT_MEMORY_LIMIT => $this->actions->jobMemoryExceeded($job),
         };
     }
 
     private function memoryExceeded(): bool
     {
-        $memory = $this->options->memory;
-        return (memory_get_usage(true) / 1024 / 1024) >= $memory;
+        return (memory_get_usage(true) / 1024 / 1024) >= $this->options->memory;
     }
 
     private function runJob(Job $job): void
@@ -106,5 +115,10 @@ class Worker
         } catch(\Exception $e) {
             $this->actions->buryJob($job, $e->getMessage());
         }
+    }
+
+    private function stopWhenEmpty(?Job $job): bool
+    {
+        return $this->options->stop_when_empty && empty($job);
     }
 }

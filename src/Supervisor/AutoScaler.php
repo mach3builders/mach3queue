@@ -32,15 +32,11 @@ class AutoScaler
     {
         $total_jobs = Queue::getTotalJobsInQueue();
 
-        if ($total_jobs == 0) {
-            return 0;
-        }
-
-        if ($this->current == 0) {
+        if ($this->current == 0 || $total_jobs == 0) {
             return $total_jobs;
         }
 
-        return Queue::getTotalJobsInQueue() / $this->current;
+        return $total_jobs / $this->current;
     }
 
     private function ifWorkloadIsHighAndWeAreNotAtMax(): bool
