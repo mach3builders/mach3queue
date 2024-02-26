@@ -22,7 +22,7 @@ readonly class Console
         $input = new ArgvInput($params);
         $output = new ConsoleOutput;
 
-        match ($argv[1]) {
+        match ($argv[1] ?? null) {
             null => (new QueueCommand($this->config))->run($input, $output),
             'worker' => (new WorkerCommand($this->config))->run($input, $output),
             'supervisor' => (new SupervisorCommand($this->config))->run($input, $output),

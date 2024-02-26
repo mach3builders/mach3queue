@@ -28,7 +28,7 @@ if (!file_exists($destination)) {
 |
 */
 
-$config = require  __DIR__.'/../../../queue.php';
+$queue_config = require  __DIR__.'/../../../queue.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +39,7 @@ $config = require  __DIR__.'/../../../queue.php';
 |
 */
 
-$bootstrap = $config['bootstrap'];
+$bootstrap = $queue_config['bootstrap'];
 
 if (!(file_exists($bootstrap) && include $bootstrap)) {
     fwrite(STDERR, 'Failed to load bootstrap.'.PHP_EOL);
@@ -55,4 +55,4 @@ if (!(file_exists($bootstrap) && include $bootstrap)) {
 |
 */
 
-(new Console($config))->handle($argv);
+(new Console($queue_config))->handle($argv);
