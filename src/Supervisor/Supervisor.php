@@ -23,11 +23,11 @@ class Supervisor
 
     public CarbonImmutable $last_auto_scaled;
 
-    public AutoScalar $auto_scalar;
+    public AutoScaler $auto_scalar;
 
     public function __construct(
         SupervisorOptions $options,
-        AutoScalar $auto_scalar = new AutoScalar
+        AutoScaler $auto_scalar = new AutoScaler
     ) {
         $this->options = $options;
         $this->auto_scalar = $auto_scalar;

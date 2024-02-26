@@ -4,7 +4,7 @@ namespace Mach3queue\Supervisor;
 
 use Mach3queue\Queue\QueueManager as Queue;
 
-class AutoScalar
+class AutoScaler
 {
     private int $max;
     private int $min;
