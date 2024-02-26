@@ -81,26 +81,3 @@ describe('Supervisor', function () {
          expect($supervisor->processes()->count())->toBe(3);
      });
 });
-
-function supervisorOptions(): SupervisorOptions
-{
-    WorkerCommandString::$command = 'exec '.PHP_BINARY.' worker.php';
-    
-    return new SupervisorOptions(
-        maxProcesses: 5,
-        minProcesses: 2,
-        directory: realpath(__DIR__.'/../'),
-        balanceCooldown: 1,
-        maxWorkload: 5,
-    );
-}
-
-function advanceTimeByMinutes(int $minutes): void
-{
-    CarbonImmutable::setTestNow(CarbonImmutable::now()->addMinutes($minutes));
-}
-
-function advanceTimeBySeconds(int $seconds): void
-{
-    CarbonImmutable::setTestNow(CarbonImmutable::now()->addSeconds($seconds));
-}

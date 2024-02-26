@@ -186,30 +186,3 @@ describe('Master Supervisor', function () {
         expect(Job::count())->toBe(1);
     });
 });
-
-function trimOptions(): array
-{
-    return [
-        'trim' => [
-            'completed' => 60,
-            'failed' => 10080,
-        ],
-    ];
-}
-
-function advanceTimeByMinutes(int $minutes): void
-{
-    CarbonImmutable::setTestNow(CarbonImmutable::now()->addMinutes($minutes));
-}
-
-function createCompletedJobAtTime(CarbonImmutable $time): void
-{
-    $job = new Job;
-    $job->queue = 'default';
-    $job->payload = '';
-    $job->added_dt = $time;
-    $job->send_dt = $time;
-    $job->is_complete = true;
-    $job->created_at = $time;
-    $job->save();
-}

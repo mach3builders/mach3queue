@@ -36,6 +36,10 @@ class AutoScaler
             return 0;
         }
 
+        if ($this->current == 0) {
+            return $total_jobs;
+        }
+
         return Queue::getTotalJobsInQueue() / $this->current;
     }
 
