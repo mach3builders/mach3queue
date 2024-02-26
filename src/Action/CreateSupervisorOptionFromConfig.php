@@ -8,12 +8,11 @@ use Mach3queue\Supervisor\SupervisorOptions;
 class CreateSupervisorOptionFromConfig
 {
     static function create(
-        MasterSupervisor $master, 
-        string $supervisor, 
+        MasterSupervisor $master,
+        string $name,
         array $options
-    ): SupervisorOptions
-    {
-        $supervisor_options = SupervisorOptions::fromConfig($supervisor, $options);
+    ): SupervisorOptions {
+        $supervisor_options = SupervisorOptions::fromConfig($name, $options);
         $supervisor_options->master = $master->name();
 
         return $supervisor_options;

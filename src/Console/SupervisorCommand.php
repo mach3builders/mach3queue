@@ -27,6 +27,7 @@ class SupervisorCommand extends Command
         $this->setDefinition(
             new InputDefinition([
                 new InputOption('max-processes', 'mp', InputOption::VALUE_REQUIRED),
+                new InputOption('name', 'n', InputOption::VALUE_REQUIRED),
                 new InputOption('queue', 'q', InputOption::VALUE_REQUIRED),
                 new InputOption('master', 'm', InputOption::VALUE_REQUIRED),
                 new InputOption('timeout', 't', InputOption::VALUE_OPTIONAL),
@@ -66,6 +67,7 @@ class SupervisorCommand extends Command
     private function getSupervisorOptions(InputInterface $input): SupervisorOptions
     {
         return new SupervisorOptions(
+            name: $input->getOption('name'),
             master: $input->getOption('master'),
             queues: $this->getQueueNames($input),
             maxProcesses: $input->getOption('max-processes'),

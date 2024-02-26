@@ -12,17 +12,11 @@ class Supervisor
     use ListensForSignals;
 
     public string $name;
-
-    public bool $working = true;
-    
-    public SupervisorOptions $options;
-
-    public ProcessPool $process_pool;
-
     public Closure $output;
-
+    public SupervisorOptions $options;
+    public bool $working = true;
+    public ProcessPool $process_pool;
     public CarbonImmutable $last_auto_scaled;
-
     public AutoScaler $auto_scalar;
 
     public function __construct(

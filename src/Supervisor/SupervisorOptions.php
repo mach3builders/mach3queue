@@ -49,7 +49,7 @@ class SupervisorOptions
 
     public function toSuperVisorName(): string
     {
-        return 'supervisor:'.$this->name.':'.$this->master;
+        return $this->name.':'.$this->master;
     }
 
     public function toJson(): string
