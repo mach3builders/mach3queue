@@ -10,7 +10,7 @@ class AutoScalar
     private int $min;
     private int $max_workload;
     private int $current;
-    private int $workload;
+    private int|float $workload;
 
     public function scale(Supervisor $supervisor): void
     {
