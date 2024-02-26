@@ -34,7 +34,7 @@ class SupervisorOptions
 
     public static function binDir(): string
     {
-        return realpath(__DIR__.'/../../vendor/bin');
+        return realpath(__DIR__.'/../../../../../vendor/bin');
     }
 
     public function toSupervisorCommand(): string

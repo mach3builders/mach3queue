@@ -7,7 +7,7 @@ use Mach3queue\Supervisor\SupervisorOptions;
 
 class SupervisorCommandString
 {
-    public static string $command = 'exec @php mach3 queue:supervisor';
+    public static string $command = 'exec @php queue supervisor';
 
     public static function fromOptions(SupervisorOptions $options): string
     {

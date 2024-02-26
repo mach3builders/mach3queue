@@ -13,11 +13,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SupervisorCommand extends Command
 {
-    private array $config;
+    private array $database;
 
     public function __construct(array $config)
     {
-        $this->config = $config;
+        $this->database = $config['database'];
 
         parent::__construct();
     }
@@ -54,11 +54,11 @@ class SupervisorCommand extends Command
         $queue = new Queue;
         $queue->pipelines($queue_names);
         $queue->setConnection([
-            'driver' => $this->config['db_driver'] ?? 'mysql',
-            'host' => $this->config['db_host'],
-            'database' => $this->config['db_name'],
-            'username' => $this->config['db_user'],
-            'password' => $this->config['db_pass'],
+            'driver' => $this->database['driver'] ?? 'mysql',
+            'host' => $this->database['host'],
+            'database' => $this->database['database'],
+            'username' => $this->database['username'],
+            'password' => $this->database['password'],
         ]);
         $queue->setAsGlobal();
     }
