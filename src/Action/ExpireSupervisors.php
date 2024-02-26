@@ -10,7 +10,8 @@ class ExpireSupervisors
     public function __invoke(): void
     {
         foreach (SupervisorRepository::all() as $supervisor) {
-            $expired = CarbonImmutable::now()->subSeconds(14)
+            $expired = CarbonImmutable::now()
+                ->subSeconds(14)
                 ->isAfter($supervisor->updated_at);
 
             if (! $expired) {

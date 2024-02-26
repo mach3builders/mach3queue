@@ -6,7 +6,7 @@ use Illuminate\Database\Capsule\Manager as Database;
 
 class SetupDatabase
 {
-    public function execute($config): void
+    public function __invoke($config): void
     {
         $database = new Database;
         $database->addConnection([

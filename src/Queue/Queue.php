@@ -7,7 +7,7 @@ use Illuminate\Database\Capsule\Manager as Database;
 
 class Queue
 {
-    const DEFAULT_QUEUE = 'default';
+    const string DEFAULT_QUEUE = 'default';
     private string $queue = self::DEFAULT_QUEUE;
     private array $pipelines = [];
     private QueueActions $actions;
@@ -19,7 +19,7 @@ class Queue
 
     public function setConnection(array $config): void
     {
-        (new SetupDatabase)->execute($config);
+        (new SetupDatabase)($config);
     }
 
     public function on(string $queue): static
@@ -62,6 +62,7 @@ class Queue
 
     public function getNextJob(): ?Job
     {
+        $job = null;
         Database::beginTransaction();
 
         try {

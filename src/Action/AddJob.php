@@ -7,7 +7,7 @@ use Mach3queue\Job\Job;
 
 class AddJob
 {
-    public function execute(
+    public function __invoke(
         string $queue,
         string $payload,
         int $delay,

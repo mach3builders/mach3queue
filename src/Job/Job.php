@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 
+/**
+ * @method static nextJobForPipeLines(array|string[] $getPipelines)
+ * @method static where(string $string, int $id)
+ */
 class Job extends Model
 {
-    const TIMEOUT_MESSAGE = 'Job has timed out';
+    const string TIMEOUT_MESSAGE = 'Job has timed out';
     
     public function scopeNextJobForPipelines(Builder $query, array $pipelines): void
     {

@@ -7,7 +7,7 @@ use Mach3queue\Job\Job;
 
 class ReserveJob
 {
-    public function execute(Job $job): void
+    public function __invoke(Job $job): void
     {
         $job->is_reserved = 1;
         $job->reserved_dt = Carbon::now();
