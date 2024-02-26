@@ -11,9 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class QueueCommand extends Command
 {
     private OutputInterface $output;
-    
     private MasterSupervisor $master;
-
     private array $config;
 
     public function __construct(array $config)
@@ -29,7 +27,9 @@ class QueueCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
+
         $this->createNewMaster($output);
+
         $this->listenForInterruption();
 
         $output->writeln('<info>Queue started successfully.</info>');
@@ -42,7 +42,9 @@ class QueueCommand extends Command
     private function createNewMaster(OutputInterface $output): void
     {
         $callable = fn($_, $line) => $output->write($line);
+
         $this->master = new MasterSupervisor($this->config);
+
         $this->master->handleOutputUsing($callable);
     }
 

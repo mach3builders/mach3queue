@@ -28,6 +28,7 @@ readonly class Console
             'supervisor' => (new SupervisorCommand($this->config))->run($input, $output),
             'install' => (new InstallCommand)->run($input, $output),
             'terminate' => (new TerminateCommand())->run($input, $output),
+            'restart' => (new RestartCommand())->run($input, $output),
             default => null,
         };
     }

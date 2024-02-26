@@ -26,7 +26,7 @@ uses(TestCase::class)->beforeEach(function () {
     ]);
     $this->queue->setAsGlobal();
 
-    (new PrepareTables)->execute();
+    (new PrepareTables)();
 })->in('Unit', 'Feature');
 
 /*

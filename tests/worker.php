@@ -17,5 +17,5 @@ $config = [
 $input = new ArgvInput($argv);
 $output = new ConsoleOutput;
 
-(new PrepareTables)->execute();
+(new PrepareTables)();
 (new WorkerCommand($config))->run($input, $output);

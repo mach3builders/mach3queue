@@ -21,5 +21,5 @@ $queue->setAsGlobal();
 $input = new ArgvInput($argv);
 $output = new ConsoleOutput;
 
-(new PrepareTables)->execute();
+(new PrepareTables)();
 (new SupervisorCommand())->run($input, $output);

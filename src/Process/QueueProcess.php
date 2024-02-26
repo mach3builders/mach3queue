@@ -18,16 +18,19 @@ class QueueProcess
         $this->output = $output ?: fn() => null;
     }
 
-    protected function restart(): void
-    {
-        $this->start($this->output);
-    }
-
     public function start(Closure $callback): void
     {
         $this->output = $callback;
 
         $this->process->start($callback);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function restart(): void
+    {
+        $this->sendSignal(SIGUSR1);
     }
 
     /**

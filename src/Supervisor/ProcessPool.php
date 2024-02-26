@@ -59,6 +59,7 @@ class ProcessPool implements Countable
             $process->terminate();
         }
 
+
         $this->removeProcesses($difference);
     }
 

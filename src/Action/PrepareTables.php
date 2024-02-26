@@ -6,7 +6,7 @@ use Illuminate\Database\Capsule\Manager as Database;
 
 class PrepareTables
 {
-    public function execute(): void
+    public function __invoke(): void
     {
         $this->createJobsTable();
         $this->prepareSupervisorTable();

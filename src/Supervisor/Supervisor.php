@@ -17,14 +17,14 @@ class Supervisor
     public bool $working = true;
     public ProcessPool $process_pool;
     public CarbonImmutable $last_auto_scaled;
-    public AutoScaler $auto_scalar;
+    public AutoScaler $auto_scaler;
 
     public function __construct(
         SupervisorOptions $options,
         AutoScaler $auto_scalar = new AutoScaler
     ) {
         $this->options = $options;
-        $this->auto_scalar = $auto_scalar;
+        $this->auto_scaler = $auto_scalar;
         $this->name = $options->toSupervisorName();
         $this->process_pool = $this->createProcessPool();
         $this->output = fn() => null;
@@ -86,6 +86,11 @@ class Supervisor
         $this->exit($status);
     }
 
+    public function restart(): void
+    {
+        $this->process_pool->scale(0);
+    }
+
     public function processes(): Collection
     {
         return $this->process_pool->processes();
@@ -112,7 +117,7 @@ class Supervisor
 
         if ($this->timePassedForAutoScale()) {
             $this->last_auto_scaled = CarbonImmutable::now();
-            $this->auto_scalar->scale($this);
+            $this->auto_scaler->scale($this);
         }
     }
 

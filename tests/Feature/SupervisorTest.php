@@ -78,4 +78,14 @@ describe('Supervisor', function () {
 
          expect($supervisor->processes()->count())->toBe(3);
     });
+
+    test('can be restarted', function () {
+        $supervisor = new Supervisor(supervisorOptions());
+
+        $supervisor->scale(2);
+        $supervisor->restart();
+
+        expect($supervisor->terminatingProcesses())->toHaveCount(2)
+            ->and($supervisor->processes())->toHaveCount(0);
+    });
 });
