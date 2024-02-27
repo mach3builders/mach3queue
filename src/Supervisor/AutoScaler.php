@@ -20,8 +20,9 @@ class AutoScaler
         $this->current = $supervisor->process_pool->runningProcesses()->count();
         $this->workload = $this->workload();
 
-
-        if ($this->ifWorkloadIsHighAndWeAreNotAtMax()) {
+        if($this->current == 0) {
+            $supervisor->scale($this->max);
+        } elseif ($this->ifWorkloadIsHighAndWeAreNotAtMax()) {
             $supervisor->scale($this->current + 1);
         } elseif ($this->ifWorkloadIsLowAndWeAreNotAtMin()) {
             $supervisor->scale($this->current - 1);

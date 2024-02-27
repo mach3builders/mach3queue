@@ -88,4 +88,14 @@ describe('Supervisor', function () {
         expect($supervisor->terminatingProcesses())->toHaveCount(2)
             ->and($supervisor->processes())->toHaveCount(0);
     });
+
+    test('can prune terminating processes', function () {
+        $supervisor = new Supervisor(supervisorOptions());
+
+        $supervisor->scale(2);
+        $supervisor->restart();
+        $supervisor->loop();
+
+        expect($supervisor->terminatingProcesses())->toHaveCount(0);
+    });
 });

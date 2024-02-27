@@ -65,6 +65,7 @@ class Supervisor
 
         if ($this->working) {
             $this->autoScale();
+            $this->process_pool->pruneTerminatingProcesses();
             $this->process_pool->monitor();
         }
 

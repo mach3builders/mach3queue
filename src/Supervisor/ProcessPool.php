@@ -40,6 +40,13 @@ class ProcessPool implements Countable
         }
     }
 
+    public function pruneTerminatingProcesses(): void
+    {
+        $this->terminatingProcesses = $this->terminatingProcesses->filter(
+            fn($process) => $process['process']->isRunning()
+        );
+    }
+
     private function scaleUp(int $process_amount): void
     {
         $difference = $process_amount - $this->processes->count();
@@ -58,7 +65,6 @@ class ProcessPool implements Countable
             $this->markForTermination($process);
             $process->terminate();
         }
-
 
         $this->removeProcesses($difference);
     }
