@@ -18,9 +18,10 @@ class QueueCommandString
     public static function toSupervisorOptionsString(SupervisorOptions $options): string
     {
         return sprintf(
-            '--name=%s --max-processes=%s --queue=%s --master=%s --directory=%s --timeout=%s',
+            '--name=%s --max-processes=%s --min-processes=%s --queue=%s --master=%s --directory=%s --timeout=%s',
             $options->name,
             $options->maxProcesses,
+            $options->minProcesses,
             implode(',', $options->queues),
             $options->master,
             $options->directory,

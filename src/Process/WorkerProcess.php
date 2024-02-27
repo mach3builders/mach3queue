@@ -10,6 +10,6 @@ class WorkerProcess extends QueueProcess
             return;
         }
 
-        $this->restart();
+        $this->start($this->output);
     }
 }
