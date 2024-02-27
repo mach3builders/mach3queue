@@ -158,7 +158,7 @@ describe('Master Supervisor', function () {
 
     test('Can remove expired supervisors', function () {
         $master = new MasterSupervisor(trimOptions());
-        $supervisor = new Supervisor(new SupervisorOptions);
+        $supervisor = new Supervisor(supervisorOptions());
 
         $master->loop();
         $supervisor->loop();

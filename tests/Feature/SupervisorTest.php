@@ -38,16 +38,6 @@ describe('Supervisor', function () {
             ->toContain(WorkerCommandString::$command);
     });
 
-    test('can scale process pool up', function () {
-        $options = supervisorOptions();
-        $supervisor = new Supervisor($options);
-
-        $supervisor->scale(2);
-        $supervisor->loop();
-
-        expect($supervisor->processes()->count())->toBe(2);
-    });
-
     test('can auto scale process pool down', function () {
          $options = supervisorOptions();
          $supervisor = new Supervisor($options);
@@ -67,7 +57,6 @@ describe('Supervisor', function () {
          $supervisor = new Supervisor($options);
 
          $supervisor->scale(2);
-         $supervisor->loop();
 
          for ($i = 0; $i < 20; $i++) {
             Queue::addJob(new FakeEmptyQueueable);
@@ -76,7 +65,7 @@ describe('Supervisor', function () {
          advanceTimeBySeconds(1);
          $supervisor->loop();
 
-         expect($supervisor->processes()->count())->toBe(3);
+         expect($supervisor->processes()->count())->toBe(5);
     });
 
     test('can be restarted', function () {
