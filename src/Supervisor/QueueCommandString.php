@@ -9,9 +9,10 @@ class QueueCommandString
     public static function toWorkerOptionsString(SupervisorOptions $options): string
     {
         return sprintf(
-            '--queue=%s --timeout=%s',
+            '--queue=%s --timeout=%s --memory=%s',
             implode(',', $options->queues),
             $options->timeout,
+            $options->memory,
         );
     }
 

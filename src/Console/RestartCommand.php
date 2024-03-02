@@ -15,24 +15,29 @@ class RestartCommand extends Command
 
         $masters = SupervisorRepository::allMasters();
 
-        if (!count($masters)) {
+        if (! count($masters)) {
             $output->writeln('<info>No queue masters found.</info>');
 
             return Command::SUCCESS;
         }
 
         foreach ($masters as $master) {
-            $output->writeln("<info>Sending USR1 signal to process {$master->pid}.</info>");
-
-            $result = posix_kill($master->pid, SIGUSR1);
-
-            if (!$result) {
-                $error = posix_strerror(posix_get_last_error());
-
-                $output->writeln("<error>Failed to terminate master {$master->pid} ({$error}).</error>");
-            }
+            $this->restartMaster($master, $output);
         }
 
         return Command::SUCCESS;
+    }
+
+    private function restartMaster(mixed $master, OutputInterface $output): void
+    {
+        $output->writeln("<info>Sending USR1 signal to process $master->pid.</info>");
+
+        if(posix_kill($master->pid, SIGUSR1)) {
+            return;
+        }
+
+        $error = posix_strerror(posix_get_last_error());
+
+        $output->writeln("<error>Failed to terminate master $master->pid ($error).</error>");
     }
 }

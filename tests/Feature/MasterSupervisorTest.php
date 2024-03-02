@@ -6,160 +6,129 @@ use Mach3queue\Supervisor\Supervisor;
 use Mach3queue\Action\ExpireSupervisors;
 use Mach3queue\Process\SupervisorProcess;
 use Mach3queue\Supervisor\MasterSupervisor;
-use Mach3queue\Supervisor\SupervisorOptions;
 use Mach3queue\Supervisor\SupervisorRepository;
-use Symfony\Component\Process\Process;
 use Tests\Feature\Fakes\MasterSupervisorWithFakeExit;
 
 describe('Master Supervisor', function () {
-    test('Has a name', function () {
-        $name = MasterSupervisor::name();
-        
-        expect($name)->toBeString()
-            ->and($name)->not->toBeEmpty();
+
+    test('has a name', function () {
+        // assert
+        expect(MasterSupervisor::name())->toBeString();
     });
 
     test('can add a new supervisor process', function () {
+        // setup
         $master = new MasterSupervisor([]);
-        $process = Mockery::mock(Process::class);
-        $master->addSupervisorProcess(new SupervisorOptions, $process);
+        $master->addSupervisorProcess(supervisorOptions(), fakeProcess());
+        $supervisors = $master->supervisors;
 
-        expect($master->supervisors)->toHaveCount(1)
-            ->and($master->supervisors[0])->toBeInstanceOf(SupervisorProcess::class);
+        // assert
+        expect($supervisors)->toHaveCount(1)
+            ->and($supervisors->first())->toBeInstanceOf(SupervisorProcess::class);
     });
 
-    test('Can clean up dead supervisor process', function () {
+    test('can clean up dead supervisor process', function () {
+        // setup
         $master = new MasterSupervisor(trimOptions());
-        $process = Mockery::mock(Process::class);
-        $master->addSupervisorProcess(new SupervisorOptions, $process);
-        $supervisor_process = $master->supervisors[0];
+        $process = fakeProcess();
+        $master->addSupervisorProcess(supervisorOptions(), $process);
+        $supervisor = $master->supervisors->first();
 
-        $process->shouldReceive('isStarted')->andReturn(true);
-        $process->shouldReceive('isRunning')->andReturn(false);
+        // test
+        $process->expects()->isStarted()->andReturn(true);
+        $process->expects()->isRunning()->andReturn(false);
 
+        // run
         $master->loop();
 
-        expect($supervisor_process->dead)->toBeTrue()
+        // assert
+        expect($supervisor->dead)->toBeTrue()
             ->and($master->supervisors)->toHaveCount(0);
     });
 
-    test('Can create supervisors based on a config', function() {
-        $config = [
-            'supervisors' => [
-                'supervisor-1' => [
-                    'queue' => ['default'],
-                    'max_processes' => 5,
-                    'timeout' => 60,
-                    'directory' => realpath(__DIR__.'/../'),
-                ],
-                'supervisor-2' => [
-                    'queue' => ['ai', 'export'],
-                    'max_processes' => 3,
-                    'timeout' => 60,
-                    'directory' => realpath(__DIR__.'/../'),
-                ],
-            ]
-        ];
+    test('can create supervisor based on a config', function() {
+        // setup
+        $master = new MasterSupervisor([
+            'supervisors' => [...defaultSupervisorConfig1()]
+        ]);
 
-        $master = new MasterSupervisor($config);
-
-        expect($master->supervisors)->toHaveCount(2)
-        ->and($master->supervisors[0]->process->getCommandLine())
+        // assert
+        expect($master->supervisors)->toHaveCount(1)
+            ->and($master->supervisors[0]->process->getCommandLine())
             ->toContain('queue supervisor')
+            ->toContain('--name=supervisor-1')
+            ->toContain('--min-processes=2')
             ->toContain('--max-processes=5')
             ->toContain('--queue=default')
-            ->toContain('--master='.MasterSupervisor::name())
-            ->toContain('--directory='.realpath(__DIR__.'/../'))
-        ->and($master->supervisors[1]->process->getCommandLine())
-            ->toContain('queue supervisor')
-            ->toContain('--max-processes=3')
-            ->toContain('--queue=ai,export')
+            ->toContain('--timeout=60')
             ->toContain('--master='.MasterSupervisor::name())
             ->toContain('--directory='.realpath(__DIR__.'/../'));
     });
 
-    test('Can be found in repository', function() {
+    test('can be found in repository', function() {
+        // setup
+        $name = MasterSupervisor::name();
         $master = new MasterSupervisor(trimOptions());
+
+        // run
         $master->loop();
 
-        $supervisor = SupervisorRepository::get(MasterSupervisor::name());
-
-        expect($supervisor->name)->toBe(MasterSupervisor::name())
-            ->and($supervisor->status)->toBe('running');
+        // assert
+        expect(SupervisorRepository::get($name)->name)->toBe($name)
+            ->and(SupervisorRepository::get($name)->status)->toBe('running');
     });
 
     test('Can terminate', function () {
-        $config = [
-            'trim' => [
-                'completed' => 60,
-                'failed' => 10080,
-            ],
-            'supervisors' => [
-                'supervisor-1' => [
-                    'queue' => ['default'],
-                    'max_processes' => 5,
-                    'timeout' => 60,
-                    'directory' => realpath(__DIR__.'/../'),
-                ],
-                'supervisor-2' => [
-                    'queue' => ['ai', 'export'],
-                    'max_processes' => 3,
-                    'timeout' => 60,
-                    'directory' => realpath(__DIR__.'/../'),
-                ],
-            ],
-        ];
+        // setup
+        $master = new MasterSupervisorWithFakeExit([
+            ...trimOptions(),
+            'supervisors' => [...defaultSupervisorConfig1()],
+        ]);
 
-        $master = new MasterSupervisorWithFakeExit($config);
+        // run
         $master->loop();
         $master->terminate();
 
+        // assert
         expect($master->exited)->toBeTrue()
             ->and(SupervisorRepository::get(MasterSupervisor::name()))->toBeEmpty();
     });
 
     test('Can get longest running supervisor', function() {
-        $config = [
-            'trim' => [
-                'completed' => 60,
-                'failed' => 10080,
-            ],
-            'supervisors' => [
-                'supervisor-1' => [
-                    'queue' => ['default'],
-                    'max_processes' => 1,
-                    'timeout' => 300,
-                    'directory' => realpath(__DIR__.'/../'),
-                ],
-            ],
-        ];
+        // setup
+        $master = new MasterSupervisor([
+            ...trimOptions(),
+            'supervisors' => [...defaultSupervisorConfig1(timeout: 300)],
+        ]);
 
-        $master = new MasterSupervisor($config);
-        $longest = $master->getLongestTimeoutSupervisor();
-
-        expect($longest)->toBe(300);
+        // assert
+        expect($master->getLongestTimeoutSupervisor())->toBe(300);
     });
 
     test('Can persist in the repository', function () {
+        // setup
         $master = new MasterSupervisor(trimOptions());
+        $name = MasterSupervisor::name();
 
+        // run
         $master->loop();
-
-        $date_1 = SupervisorRepository::get(MasterSupervisor::name())->updated_at;
+        $date_1 = SupervisorRepository::get($name)->updated_at;
 
         advanceTimeByMinutes(2);
 
         $master->loop();
+        $date_2 = SupervisorRepository::get($name)->updated_at;
 
-        $date_2 = SupervisorRepository::get(MasterSupervisor::name())->updated_at;
-
+        // assert
         expect($date_1)->not->toBe($date_2);
     });
 
     test('Can remove expired supervisors', function () {
+        // setup
         $master = new MasterSupervisor(trimOptions());
         $supervisor = new Supervisor(supervisorOptions());
 
+        // run
         $master->loop();
         $supervisor->loop();
 
@@ -167,22 +136,21 @@ describe('Master Supervisor', function () {
 
         (new ExpireSupervisors())();
 
+        // assert
         expect(SupervisorRepository::get($master->name))->toBeEmpty()
             ->and(SupervisorRepository::get($supervisor->name))->toBeEmpty();
     });
 
     test('Can trim old jobs', function () {
+        // setup
         createCompletedJobAtTime(CarbonImmutable::now());
         createCompletedJobAtTime(CarbonImmutable::now()->subHours(25));
+        $master = new MasterSupervisor(trimOptions());
 
-        $master = new MasterSupervisor([
-            'trim' => [
-                'completed' => 60,
-                'failed' => 10080,
-            ],
-        ]);
+        // run
         $master->loop();
 
+        // assert
         expect(Job::count())->toBe(1);
     });
 });

@@ -16,17 +16,12 @@ class MasterSupervisor
 {
     use ListensForSignals;
     
-    public Collection $supervisors;
-
-    public Closure $output;
-
-    public bool $working = true;
-
     public string $name;
-
-    public MasterActions $actions;
-
     public array $config;
+    public Closure $output;
+    public Collection $supervisors;
+    public bool $working = true;
+    public MasterActions $actions;
 
     public function __construct(
         array $config,
@@ -141,6 +136,10 @@ class MasterSupervisor
 
     private function createSupervisorsFromConfig(array $config): void
     {
+        if (empty($config['supervisors'])) {
+            return;
+        }
+
         foreach ($config['supervisors'] as $name => $options) {
             $supervisor_options = CreateSupervisorOptionFromConfig::create(
                 $this,
@@ -178,6 +177,7 @@ class MasterSupervisor
     
     public function getLongestTimeoutSupervisor(): int
     {
+
         return $this->supervisors->max('options.timeout');
     }
 

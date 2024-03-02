@@ -7,6 +7,7 @@ use Mach3queue\Worker\Worker;
 use Mach3queue\Worker\WorkerActions;
 use Mach3queue\Worker\WorkerOptions;
 use Symfony\Component\Console\Command\Command;
+use Mach3queue\Action\GetQueueNamesFromConsole;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -30,6 +31,7 @@ class WorkerCommand extends Command
                 new InputOption('stop-when-empty', 's'),
                 new InputOption('queue', 'q', InputOption::VALUE_REQUIRED),
                 new InputOption('timeout', 't', InputOption::VALUE_OPTIONAL),
+                new InputOption('memory', 'm', InputOption::VALUE_OPTIONAL),
             ])
         );
     }
@@ -50,16 +52,15 @@ class WorkerCommand extends Command
             'actions' => new WorkerActions,
             'options' => new WorkerOptions(
                 stop_when_empty: $input->getOption('stop-when-empty'),
+                memory: $input->getOption('memory') ?? 128,
             ),
         ];
     }
 
     private function createQueue(InputInterface $input): Queue
     {
-        $queue_names = $this->getQueueNames($input);
-        
         $queue = new Queue;
-        $queue->pipelines($queue_names);
+        $queue->pipelines(GetQueueNamesFromConsole::get($input));
         $queue->setConnection([
             'driver' => $this->database['driver'] ?? 'mysql',
             'host' => $this->database['host'],
@@ -69,12 +70,5 @@ class WorkerCommand extends Command
         ]);
 
         return $queue;
-    }
-
-    private function getQueueNames(InputInterface $input): array
-    {
-        $queue = $input->getOption('queue');
-
-        return $queue ? explode(',', $queue) : [Queue::DEFAULT_QUEUE];
     }
 }

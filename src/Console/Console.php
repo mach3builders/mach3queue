@@ -17,12 +17,10 @@ readonly class Console
      */
     public function handle(array $argv): void
     {
-        $params = $argv;
-        unset($params[1]);
-        $input = new ArgvInput($params);
+        $input = new ArgvInput($this->params($argv));
         $output = new ConsoleOutput;
 
-        match ($argv[1] ?? null) {
+        match ($this->method($argv)) {
             null => (new QueueCommand($this->config))->run($input, $output),
             'worker' => (new WorkerCommand($this->config))->run($input, $output),
             'supervisor' => (new SupervisorCommand($this->config))->run($input, $output),
@@ -31,5 +29,15 @@ readonly class Console
             'restart' => (new RestartCommand())->run($input, $output),
             default => null,
         };
+    }
+
+    private function method(array $argv): string|null
+    {
+        return $argv[1] ?? null;
+    }
+
+    private function params(array $argv): array
+    {
+        return array_slice($argv, 2);
     }
 }

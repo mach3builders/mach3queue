@@ -7,22 +7,22 @@ use Mach3queue\Job\Job;
 class RunJob
 {
     private Job $job;
-    private mixed $action;
+    private mixed $payload;
 
     public function __invoke(Job $job): void
     {
         $this->job = $job;
-        $this->action = unserialize($job->payload);
+        $this->payload = unserialize($job->payload);
 
-        $this->printStart();
-        $this->action->handle();
+        $this->echoJobIsRunning();
+        $this->payload->handle();
     }
 
-    private function printStart(): void
+    private function echoJobIsRunning(): void
     {
         $pid = getmypid();
         $id = $this->job->id;
-        $class = get_class($this->action);
+        $class = get_class($this->payload);
         $time = date('Y-m-d H:i:s');
 
         echo "$time [$pid] running  job: [$id] $class".PHP_EOL;

@@ -10,7 +10,8 @@ class Worker
     const int EXIT_ERROR = 1;
     const int EXIT_MEMORY_LIMIT = 12;
 
-    private bool $should_quit = false;
+    public bool $should_quit = false;
+    public bool $working = true;
 
     public function __construct(
         private readonly Queue $queue,
@@ -25,6 +26,11 @@ class Worker
         $this->listenForSignalsOnWorker();
 
         while(true) {
+            if(! $this->working) {
+                sleep(1);
+                continue;
+            }
+
             $job = $this->queue->getNextJob();
 
             if ($stop = $this->checkIfShouldStop($job)) {
@@ -78,10 +84,16 @@ class Worker
 
     public function pause(): void
     {
+        echo "\033[34mPausing worker\033[0m".PHP_EOL;
+
+        $this->working = false;
     }
 
     public function resume(): void
     {
+        echo "\033[34mResuming worker\033[0m".PHP_EOL;
+
+        $this->working = true;
     }
 
     private function checkIfShouldStop(?Job $job = null): int

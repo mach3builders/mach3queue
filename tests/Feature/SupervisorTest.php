@@ -8,64 +8,75 @@ use Mach3queue\Supervisor\WorkerCommandString;
 use Tests\Feature\Fakes\SupervisorWithFakeExit;
 
 describe('Supervisor', function () {
+
     test('can be found in repository', function () {
+        // setup
         $options = supervisorOptions();
         $supervisor = new Supervisor($options);
 
+        // run
         $supervisor->loop();
-        
+
+        // assert
         expect(SupervisorRepository::get($supervisor->name))->not->toBeNull();
     });
 
     test('can be terminated', function () {
+        // setup
         $options = supervisorOptions();
         $supervisor = new SupervisorWithFakeExit($options);
 
+        // run
         $supervisor->terminate();
-        
+
+        // assert
         expect($supervisor->exited)->toBeTrue()
             ->and(SupervisorRepository::get($supervisor->name))->toBeNull();
     });
 
     test('can start worker process', function () {
-        $options = supervisorOptions();
-        $supervisor = new Supervisor($options);
+        // setup
+        $supervisor = new Supervisor(supervisorOptions());
 
+        // run
         $supervisor->scale(1);
         $supervisor->loop();
-        
+
+        // assert
         expect($supervisor->processes()[0]->getCommandLine())
             ->toContain(WorkerCommandString::$command);
     });
 
     test('can auto scale process pool down', function () {
-         $options = supervisorOptions();
-         $supervisor = new Supervisor($options);
+        // setup
+        $options = supervisorOptions();
+        $supervisor = new Supervisor($options);
 
-         $supervisor->scale($options->maxProcesses);
-         $supervisor->loop();
+        // run
+        $supervisor->scale($options->maxProcesses);
+        $supervisor->loop();
 
-         advanceTimeBySeconds(1);
+        advanceTimeBySeconds(1);
 
-         $supervisor->loop();
+        $supervisor->loop();
 
-         expect($supervisor->processes()->count())->toBe(4);
+        // assert
+        expect($supervisor->processes()->count())->toBe(4);
     });
 
     test('can autoscale process pool up', function () {
-         $options = supervisorOptions();
-         $supervisor = new Supervisor($options);
+        // setup
+        addFakeJobToQueue(20);
+        $options = supervisorOptions();
+        $supervisor = new Supervisor($options);
 
-         $supervisor->scale(2);
+        // run
+        $supervisor->scale(2);
+        advanceTimeBySeconds(1);
+        $supervisor->loop();
 
-         for ($i = 0; $i < 20; $i++) {
-            Queue::addJob(new FakeEmptyQueueable);
-         }
-
-         advanceTimeBySeconds(1);
-         $supervisor->loop();
-
-         expect($supervisor->processes()->count())->toBe(5);
+        // assert
+        expect($supervisor->processes()->count())->toBe(5);
     });
 
     test('can be restarted', function () {
@@ -87,4 +98,5 @@ describe('Supervisor', function () {
 
         expect($supervisor->terminatingProcesses())->toHaveCount(0);
     });
+
 });

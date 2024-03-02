@@ -7,7 +7,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 class SupervisorRepository
 {
-    const TABLE = 'supervisors';
+    const string TABLE = 'supervisors';
 
     public static function get(string $name): ?object
     {

@@ -6,10 +6,25 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
-
 /**
  * @method static nextJobForPipeLines(array|string[] $getPipelines)
  * @method static where(string $string, int $id)
+ * @method static olderThanSeconds(int $completed_seconds)
+ * @property int $id
+ * @property string $queue
+ * @property string $payload
+ * @property string $message
+ * @property int $priority
+ * @property int $is_buried
+ * @property int $is_reserved
+ * @property int $is_complete
+ * @property int $attempts
+ * @property Carbon $added_dt
+ * @property Carbon $send_dt
+ * @property Carbon $time_to_retry_dt
+ * @property Carbon $buried_dt
+ * @property Carbon $reserved_dt
+ * @property Carbon $complete_dt
  */
 class Job extends Model
 {

@@ -2,10 +2,11 @@
 
 namespace Mach3queue\Console;
 
-use Mach3queue\Queue\QueueManager as Queue;
 use Mach3queue\SuperVisor\Supervisor;
 use Mach3queue\Supervisor\SupervisorOptions;
 use Symfony\Component\Console\Command\Command;
+use Mach3queue\Action\GetQueueNamesFromConsole;
+use Mach3queue\Action\CreateQueueFromConsole;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -39,7 +40,7 @@ class SupervisorCommand extends Command
     
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->createQueue($input);
+        CreateQueueFromConsole::create($input, $this->database);
         $options = $this->getSupervisorOptions($input);
         $supervisor = new Supervisor($options);
         $supervisor->handleOutputUsing(fn($_, $line) => $output->write($line));
@@ -49,39 +50,16 @@ class SupervisorCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function createQueue(InputInterface $input): void
-    {
-        $queue_names = $this->getQueueNames($input);
-
-        $queue = new Queue;
-        $queue->pipelines($queue_names);
-        $queue->setConnection([
-            'driver' => $this->database['driver'] ?? 'mysql',
-            'host' => $this->database['host'],
-            'database' => $this->database['database'],
-            'username' => $this->database['username'],
-            'password' => $this->database['password'],
-        ]);
-        $queue->setAsGlobal();
-    }
-
     private function getSupervisorOptions(InputInterface $input): SupervisorOptions
     {
         return new SupervisorOptions(
             name: $input->getOption('name'),
             master: $input->getOption('master'),
-            queues: $this->getQueueNames($input),
+            queues: GetQueueNamesFromConsole::get($input),
             timeout: $input->getOption('timeout'),
             maxProcesses: $input->getOption('max-processes'),
             minProcesses: $input->getOption('min-processes'),
             directory: $input->getOption('directory') ?? __DIR__,
         );
-    }
-
-    private function getQueueNames(InputInterface $input): array
-    {
-        $queue = $input->getOption('queue');
-
-        return $queue ? explode(',', $queue) : [Queue::DEFAULT_QUEUE];
     }
 }
