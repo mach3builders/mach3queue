@@ -10,6 +10,10 @@ use Illuminate\Support\Carbon;
  * @method static nextJobForPipeLines(array|string[] $getPipelines)
  * @method static where(string $string, int $id)
  * @method static olderThanSeconds(int $completed_seconds)
+ * @method static completed()
+ * @method static failed()
+ * @method static running()
+ * @method static pending()
  * @property int $id
  * @property string $queue
  * @property string $payload
@@ -110,6 +114,15 @@ class Job extends Model
     public function scopeFailed(Builder $query): void
     {
         $query->where('is_buried', 1);
+    }
+
+    public function scopeRunning(Builder $query): void
+    {
+        $query->where('is_reserved', 1);
+    }
+    public function scopePending(Builder $query): void
+    {
+        $query->where('attempts', 0);
     }
 
     public function status(): Status

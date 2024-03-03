@@ -8,8 +8,11 @@ use Illuminate\Database\Capsule\Manager as Database;
 class Queue
 {
     const string DEFAULT_QUEUE = 'default';
+
     private string $queue = self::DEFAULT_QUEUE;
+
     private array $pipelines = [];
+
     private QueueActions $actions;
 
     public function __construct(QueueActions $actions = new QueueActions)

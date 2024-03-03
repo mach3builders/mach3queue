@@ -27,35 +27,29 @@ class SupervisorRepository
 
     public static function updateOrCreate(Supervisor $supervisor): void
     {
-        $match = [
+        DB::table(self::TABLE)->updateOrInsert([
             'name' => 'supervisor:'.$supervisor->name
-        ];
-        $data = [
+        ], [
             'master' => implode(':', explode(':', $supervisor->name, -1)),
             'pid' => $supervisor->pid(),
             'status' => $supervisor->working ? 'running' : 'paused',
             'processes' => count($supervisor->process_pool),
             'options' => $supervisor->options->toJson(),
             'updated_at' => CarbonImmutable::now(),
-        ];
-
-        DB::table(self::TABLE)->updateOrInsert($match, $data);
+        ]);
     }
 
     public static function updateOrCreateMaster(MasterSupervisor $master): void
     {
-        $match = [
+        DB::table(self::TABLE)->updateOrInsert([
             'name' => $master->name,
             'master' => null
-        ];
-        $data = [
+        ], [
             'pid' => $master->pid(),
             'status' => $master->working ? 'running' : 'paused',
             'processes' => count($master->supervisors),
             'updated_at' => CarbonImmutable::now(),
-        ];
-
-        DB::table(self::TABLE)->updateOrInsert($match, $data);
+        ]);
     }
 
     public static function allMasters(): array
