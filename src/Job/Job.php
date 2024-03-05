@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
  * @method static failed()
  * @method static running()
  * @method static pending()
+ * @method static queuesWorkload()
  * @property int $id
  * @property string $queue
  * @property string $payload
@@ -123,6 +124,13 @@ class Job extends Model
     public function scopePending(Builder $query): void
     {
         $query->where('attempts', 0);
+    }
+
+    public function scopeQueuesWorkload(Builder $query): void
+    {
+        $query->pending()
+            ->select('queue', $query->raw('count(*) as count'))
+            ->groupBy('queue');
     }
 
     public function status(): Status
