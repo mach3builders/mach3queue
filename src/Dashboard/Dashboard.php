@@ -60,37 +60,35 @@ class Dashboard
         $supervisors = collect(SupervisorRepository::all());
         $master_index = $supervisors->search(fn($s) => $s->master == null);
         $active = $master_index !== false;
+        $queue_workload = Job::queuesWorkload()->get()->keyBy('queue');
+        $queues = [];
 
         if ($master_index !== false) {
             $supervisors->forget($master_index);
         }
 
-        $jobs->map(function ($job) {
-            $payload = unserialize($job->payload);
-            $job->name = get_class($payload);
-            $tags = [];
+        $supervisors = $supervisors->values();
 
-            $params = get_object_vars($payload);
+        foreach ($supervisors as $supervisor) {
+            $supervisor->options = json_decode($supervisor->options);
 
-            foreach($params as $key => $value) {
-                if (is_object($value)) {
-                    $value = $value->id ?? null;
+            foreach (explode(',', $supervisor->options->queues) as $queue) {
+                if (!array_key_exists($queue, $queues)) {
+                    $queues[$queue] = [
+                        'name' => $queue,
+                        'count' => 0,
+                    ];
                 }
 
-                $tags[] = [
-                    'name' => $key,
-                    'value' => $value,
-                ];
+                $queues[$queue]['count'] += $queue_workload[$queue]?->count ?? 0;
             }
+        }
 
-            $job->tags = $tags;
 
-            return $job;
-        });
 
         return json_encode([
             'active' => $active,
-            'queues' => $active ? Job::queuesWorkload()->get() : [],
+            'queues' => $active ? array_values($queues) : [],
             'supervisors' => $active ? $supervisors : [],
             'completedJobs' => Job::completed()->count(),
             'failedJobs' => Job::failed()->count(),

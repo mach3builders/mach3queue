@@ -1,11 +1,8 @@
 <script setup>
 import { data } from './fetch.js';
+import { List, ListBody, ListRow, ListHeader } from './list/ListComponents.js';
 import MetricCard from "./MetricCard.vue";
 import MetricCardStatus from "./MetricCardStatus.vue";
-import List from "./List.vue";
-import ListHeader from "./ListHeader.vue";
-import ListBody from "./ListBody.vue";
-import ListRow from "./ListRow.vue";
 
 const dashboard = data('dashboard');
 </script>
@@ -42,7 +39,3 @@ const dashboard = data('dashboard');
     </list>
   </div>
 </template>
-
-<style scoped>
-
-</style>

@@ -1,10 +1,7 @@
 <script setup>
-import ErrorMessage from "./ErrorMessage.vue";
-import ListBody from "./ListBody.vue";
-import ListHeader from "./ListHeader.vue";
-import List from "./List.vue";
-import ListRow from "./ListRow.vue";
 import { data } from './fetch.js';
+import { List, ListBody, ListRow, ListHeader } from './list/ListComponents.js';
+import Message from "./Message.vue";
 
 const jobs = data('pending');
 </script>
@@ -15,20 +12,16 @@ const jobs = data('pending');
     <list-header :headers="['Job', 'Queued']"></list-header>
     <list-body>
       <list-row
-          v-for="job in jobs"
-          :queue="job.queue"
-          :tags="job.tags"
-          :items="[job.name, job.queued]">
+        v-for="job in jobs"
+        :queue="job.queue"
+        :tags="job.tags"
+        :items="[job.name, job.added_dt]">
       </list-row>
     </list-body>
   </list>
 
-  <error-message v-if="!jobs.length">
+  <message v-if="!jobs.length">
     No pending jobs are found
-  </error-message>
+  </message>
 
 </template>
-
-<style scoped>
-
-</style>

@@ -1,17 +1,4 @@
 const data = {
-    pending: [
-        {
-            name: 'Queue\\GeneratePageMetaTitle',
-            queue: 'ai',
-            queued: '2024-03-02 12:57:45',
-            tags: [
-                {
-                    name: 'App\\Page',
-                    value: 12
-                }
-            ]
-        },
-    ],
     dashboard: {
         completedJobs: 100,
         failedJobs: 5,
@@ -49,12 +36,25 @@ const data = {
             },
         ],
     },
+    pending: [
+        {
+            name: 'Queue\\GeneratePageMetaTitle',
+            queue: 'ai',
+            added_dt: '2024-03-02 12:57:45',
+            tags: [
+                {
+                    name: 'App\\Page',
+                    value: 12
+                }
+            ]
+        },
+    ],
     completed: [
         {
             name: 'Queue\\GeneratePageMetaTitle',
             queue: 'ai',
-            queued: '2024-03-02 12:57:45',
-            completed_at: '2024-03-02 12:57:45',
+            added_dt: '2024-03-02 12:57:45',
+            complete_dt: '2024-03-02 12:57:45',
             runtime: 0.09,
             tags: [
                 {
@@ -68,7 +68,7 @@ const data = {
         {
             name: 'Queue\\GeneratePageMetaTitle',
             queue: 'ai',
-            queued: '2024-03-02 12:57:45',
+            added_dt: '2024-03-02 12:57:45',
             buried_dt: '2024-03-02 12:57:45',
             runtime: 0.09,
             tags: [

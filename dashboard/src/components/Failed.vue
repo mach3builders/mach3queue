@@ -1,10 +1,7 @@
 <script setup>
+import Message from "./Message.vue";
+import { List, ListBody, ListRow, ListHeader } from './list/ListComponents.js';
 import { data } from './fetch.js';
-import ListBody from "./ListBody.vue";
-import ListHeader from "./ListHeader.vue";
-import List from "./List.vue";
-import ListRow from "./ListRow.vue";
-import ErrorMessage from "./ErrorMessage.vue";
 
 const jobs = data('failed');
 </script>
@@ -15,15 +12,15 @@ const jobs = data('failed');
     <list-header :headers="['Job', 'Queued', 'Failed', 'Runtime']"></list-header>
     <list-body>
       <list-row
-          v-for="job in jobs"
-          :queue="job.queue"
-          :tags="job.tags"
-          :items="[job.name, job.queued, job.buried_dt, 0.05]">
+        v-for="job in jobs"
+        :queue="job.queue"
+        :tags="job.tags"
+        :items="[job.name, job.added_dt, job.buried_dt, 0.05]">
       </list-row>
     </list-body>
   </list>
 
-  <error-message v-if="!jobs.length">
+  <message v-if="!jobs.length">
     No failed jobs are found
-  </error-message>
+  </message>
 </template>
