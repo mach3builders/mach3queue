@@ -2,6 +2,7 @@
 
 namespace Mach3queue\Job;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -50,7 +51,7 @@ class Job extends Model
 
     public function scopeSendBeforeNow(Builder $query): void
     {
-        $query->where('send_dt', '<=', Carbon::now());
+        $query->where('send_dt', '<=', CarbonImmutable::now());
     }
 
     public function scopeIsNotBuried(Builder $query): void
@@ -80,7 +81,7 @@ class Job extends Model
     public function scopeReservedIsExpired(Builder $query): void
     {
         $query->where('is_reserved', 1)
-            ->where('reserved_dt', '<=', Carbon::now()->subMinutes(5));
+            ->where('reserved_dt', '<=', CarbonImmutable::now()->subMinutes(5));
     }
 
     public function scopeIsNotAttemptedOrTimeToRetryIsNow(Builder $query): void
@@ -100,12 +101,12 @@ class Job extends Model
     public function scopeTimeToRetryIsNow(Builder $query): void
     {
         $query->where('attempts', '>=', 1)
-            ->where('time_to_retry_dt', '<=', Carbon::now());
+            ->where('time_to_retry_dt', '<=', CarbonImmutable::now());
     }
 
     public function scopeOlderThanSeconds(Builder $query, int $seconds): void
     {
-        $query->where('created_at', '>', Carbon::now()->subSeconds($seconds));
+        $query->where('updated_at', '<', CarbonImmutable::now()->subSeconds($seconds));
     }
 
     public function scopeCompleted(Builder $query): void

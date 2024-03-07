@@ -37,6 +37,7 @@ function createCompletedJobAtTime(CarbonImmutable $time): void
     $job->send_dt = $time;
     $job->is_complete = true;
     $job->created_at = $time;
+    $job->updated_at = $time;
     $job->save();
 }
 
