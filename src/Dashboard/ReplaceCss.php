@@ -34,7 +34,7 @@ class ReplaceCss
         return $this->html->getElementsByTagName('link');
     }
 
-    private function linkIsStylesheet(DOMNodeList $link_tag): bool
+    private function linkIsStylesheet(DOMElement $link_tag): bool
     {
         return $link_tag->getAttribute('rel') == 'stylesheet'
             && $link_tag->hasAttribute('href');
@@ -43,7 +43,7 @@ class ReplaceCss
     /**
      * @throws DOMException
      */
-    private function replaceTagWithStyle(DOMNodeList $link_tag): void
+    private function replaceTagWithStyle(DOMElement $link_tag): void
     {
         $style = $this->createStyleTag($link_tag);
 
@@ -53,7 +53,7 @@ class ReplaceCss
     /**
      * @throws DOMException
      */
-    private function createStyleTag(DOMNodeList $link_tag): DOMElement|false
+    private function createStyleTag(DOMElement $link_tag): DOMElement|false
     {
         $href = $link_tag->getAttribute('href');
         $content = file_get_contents(DashboardHtml::PATH.$href);

@@ -2,6 +2,7 @@
 
 namespace Mach3queue\Dashboard;
 
+use DOMElement;
 use DOMDocument;
 use DOMNodeList;
 
@@ -25,7 +26,7 @@ class ReplaceJs
         return $this->html->getElementsByTagName('script');
     }
 
-    private function replaceTagWithScript(mixed $script_tag): void
+    private function replaceTagWithScript(DOMElement $script_tag): void
     {
         $src = $script_tag->getAttribute('src');
         $script_content = file_get_contents(DashboardHtml::PATH . $src);
