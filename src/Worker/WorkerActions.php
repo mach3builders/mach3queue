@@ -2,22 +2,22 @@
 
 namespace Mach3queue\Worker;
 
+use Mach3queue\Job\Job;
 use Mach3queue\Action\BuryJob;
 use Mach3queue\Action\CompleteJob;
 use Mach3queue\Action\KillWorker;
 use Mach3queue\Action\RunJob;
 use Mach3queue\Action\TimeoutJob;
-use Mach3queue\Action\StartTimingJob;
 use Mach3queue\Action\JobMemoryExceeded;
 
 /**
- * @method timeoutJob(\Mach3queue\Job\Job $job)
+ * @method timeoutJob(Job $job)
  * @method killWorker()
- * @method runJob(\Mach3queue\Job\Job $job)
- * @method completeJob(\Mach3queue\Job\Job $job)
- * @method buryJob(\Mach3queue\Job\Job $job, string $message)
- * @method jobMemoryExceeded(\Mach3queue\Job\Job|null $job)
- * @method startTimingJob(\Mach3queue\Job\Job $job)
+ * @method runJob(Job $job)
+ * @method completeJob(Job $job)
+ * @method buryJob(Job $job, string $message)
+ * @method jobMemoryExceeded(Job|null $job)
+ * @method startTimingJob(Job $job)
  */
 class WorkerActions
 {

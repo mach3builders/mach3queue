@@ -7,7 +7,7 @@ use DOMException;
 
 class DashboardHtml
 {
-    const string PATH = __DIR__ . '/../../dashboard/dist/';
+    const string PATH = __DIR__ . '/../../dist/';
     private DOMDocument $html;
 
     /**
