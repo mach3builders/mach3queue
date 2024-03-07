@@ -49,7 +49,6 @@ class Worker
             });
             
             $this->runJob($job);
-
             $this->resetTimeoutHandler();
         }
     }

@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $buried_dt
  * @property Carbon $reserved_dt
  * @property Carbon $complete_dt
+ * @property float $runtime
  */
 class Job extends Model
 {

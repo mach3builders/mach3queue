@@ -2,6 +2,7 @@
 
 namespace Mach3queue\Action;
 
+use Mach3queue\Stopwatch;
 use Illuminate\Support\Carbon;
 use Mach3queue\Job\Job;
 
@@ -28,7 +29,10 @@ class BuryJob
         $this->job->is_reserved = 0;
         $this->job->reserved_dt = null;
         $this->job->message = $this->message;
+        $this->job->runtime = Stopwatch::check($this->job->id);
         $this->job->save();
+
+        Stopwatch::forget($this->job->id);
     }
 
     private function echoBuriedJob(): void

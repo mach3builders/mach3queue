@@ -7,6 +7,7 @@ use Mach3queue\Action\CompleteJob;
 use Mach3queue\Action\KillWorker;
 use Mach3queue\Action\RunJob;
 use Mach3queue\Action\TimeoutJob;
+use Mach3queue\Action\StartTimingJob;
 use Mach3queue\Action\JobMemoryExceeded;
 
 /**
@@ -16,16 +17,17 @@ use Mach3queue\Action\JobMemoryExceeded;
  * @method completeJob(\Mach3queue\Job\Job $job)
  * @method buryJob(\Mach3queue\Job\Job $job, string $message)
  * @method jobMemoryExceeded(\Mach3queue\Job\Job|null $job)
+ * @method startTimingJob(\Mach3queue\Job\Job $job)
  */
 class WorkerActions
 {
     public function __construct(
-        public RunJob $runJob = new RunJob,
-        public CompleteJob $completeJob = new CompleteJob,
         public BuryJob $buryJob = new BuryJob,
-        public TimeoutJob $timeoutJob = new TimeoutJob,
-        public KillWorker $killWorker = new KillWorker,
+        public CompleteJob $completeJob = new CompleteJob,
         public JobMemoryExceeded $jobMemoryExceeded = new JobMemoryExceeded,
+        public KillWorker $killWorker = new KillWorker,
+        public RunJob $runJob = new RunJob,
+        public TimeoutJob $timeoutJob = new TimeoutJob,
     ) {
     }
 

@@ -3,6 +3,7 @@
 namespace Mach3queue\Action;
 
 use Mach3queue\Job\Job;
+use Mach3queue\Stopwatch;
 
 class RunJob
 {
@@ -11,6 +12,7 @@ class RunJob
 
     public function __invoke(Job $job): void
     {
+        Stopwatch::start($job->id);
         $this->job = $job;
         $this->payload = unserialize($job->payload);
 

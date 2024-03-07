@@ -34,6 +34,7 @@ class PrepareTables
             $table->integer('attempts')->default(0);
             $table->dateTime('time_to_retry_dt')->nullable();
             $table->text('message')->nullable();
+            $table->string('runtime')->nullable();
             $table->timestamps();
             $table->index(['queue', 'send_dt', 'is_buried', 'is_reserved']);
         });

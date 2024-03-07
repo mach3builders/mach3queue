@@ -1,6 +1,11 @@
 <?php
 
+use Mach3queue\Stopwatch;
+use Mach3queue\Action\RunJob;
+use Mach3queue\Action\BuryJob;
+use Mach3queue\Action\CompleteJob;
 use Mach3queue\Dashboard\Dashboard;
+use Mach3queue\Supervisor\Supervisor;
 use Mach3queue\Queue\FakeEmptyQueueable;
 use Mach3queue\Supervisor\MasterSupervisor;
 
@@ -8,20 +13,19 @@ describe('Dashboard', function () {
 
     test('can get dashboard data', function () {
         // setup
-        $master = new MasterSupervisor([
-            ...trimOptions(),
-            'supervisors' => [...defaultSupervisorConfig1()]
-        ]);
+        $master = new MasterSupervisor([...trimOptions()]);
+        $supervisor = new Supervisor(supervisorOptions());
         addFakeJobToQueue(5);
 
         // run
         $master->loop();
+        $supervisor->loop();
 
         // assert
         $data = json_decode(Dashboard::parse(['data' => 'dashboard']));
 
         expect($data->active)->toBeTrue()
-            ->and($data->supervisors)->toHaveCount(0)
+            ->and($data->supervisors)->toHaveCount(1)
             ->and($data->completedJobs)->toBe(0)
             ->and($data->failedJobs)->toBe(0)
             ->and($data->pendingJobs)->toBe(5)
@@ -46,9 +50,16 @@ describe('Dashboard', function () {
         // setup
         $jobs = addFakeJobToQueue(5);
 
+
+        // run
         foreach($jobs as $job) {
-            $job->is_complete = true;
-            $job->save();
+            (new RunJob())($job);
+        }
+
+        sleep(1);
+
+        foreach($jobs as $job) {
+            (new CompleteJob())($job);
         }
 
         // assert
@@ -59,16 +70,22 @@ describe('Dashboard', function () {
             ->and($data[0]->tags)->toBeArray()
             ->and($data[0]->tags[0]->name)->toBe('test')
             ->and($data[0]->tags[0]->value)->toBe(10)
-            ->and($data[0]->runtime)->toBeFloat();
+            ->and((float) $data[0]->runtime)->toBeGreaterThan(500);
     });
 
     test('can get failed jobs', function () {
         // setup
         $jobs = addFakeJobToQueue(5);
 
+        // run
         foreach($jobs as $job) {
-            $job->is_buried = true;
-            $job->save();
+            (new RunJob())($job);
+        }
+
+        sleep(1);
+
+        foreach($jobs as $job) {
+            (new BuryJob())($job, 'failed');
         }
 
         // assert
@@ -79,6 +96,6 @@ describe('Dashboard', function () {
             ->and($data[0]->tags)->toBeArray()
             ->and($data[0]->tags[0]->name)->toBe('test')
             ->and($data[0]->tags[0]->value)->toBe(10)
-            ->and($data[0]->runtime)->toBeFloat();
+            ->and((float) $data[0]->runtime)->toBeGreaterThan(500);
     });
 });

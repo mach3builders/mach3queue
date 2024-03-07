@@ -2,6 +2,7 @@
 
 namespace Mach3queue\Action;
 
+use Mach3queue\Stopwatch;
 use Illuminate\Support\Carbon;
 use Mach3queue\Job\Job;
 
@@ -23,7 +24,10 @@ class CompleteJob
     {
         $this->job->is_complete = true;
         $this->job->complete_dt = Carbon::now();
+        $this->job->runtime = Stopwatch::check($this->job->id);
         $this->job->save();
+
+        Stopwatch::forget($this->job->id);
     }
 
     private function printFinishedJob(): void
