@@ -37,17 +37,17 @@ const data = {
         ],
     },
     pending: [
-        // {
-        //     name: 'Queue\\GeneratePageMetaTitle',
-        //     queue: 'ai',
-        //     added_dt: '2024-03-02 12:57:45',
-        //     tags: [
-        //         {
-        //             name: 'App\\Page',
-        //             value: 12
-        //         }
-        //     ]
-        // },
+        {
+            name: 'Queue\\GeneratePageMetaTitle',
+            queue: 'ai',
+            added_dt: '2024-03-02 12:57:45',
+            tags: [
+                {
+                    name: 'App\\Page',
+                    value: 12
+                }
+            ]
+        },
     ],
     completed: [
         {
@@ -70,7 +70,7 @@ const data = {
             queue: 'ai',
             added_dt: '2024-03-02 12:57:45',
             buried_dt: '2024-03-02 12:57:45',
-            runtime: 0.09,
+            runtime: 0.5,
             tags: [
                 {
                     name: 'App\\Page',

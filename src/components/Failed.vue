@@ -15,7 +15,7 @@ const jobs = data('failed');
         v-for="job in jobs"
         :queue="job.queue"
         :tags="job.tags"
-        :items="[job.name, job.added_dt, job.buried_dt, 0.05]">
+        :items="[job.name, job.added_dt, job.buried_dt, job.runtime+'s']">
       </list-row>
     </list-body>
   </list>

@@ -15,7 +15,7 @@ const jobs = data('completed');
         v-for="job in jobs"
         :queue="job.queue"
         :tags="job.tags"
-        :items="[job.name, job.added_dt, job.complete_dt, 0.09]">
+        :items="[job.name, job.added_dt, job.complete_dt, job.runtime+'s']">
       </list-row>
     </list-body>
   </list>
