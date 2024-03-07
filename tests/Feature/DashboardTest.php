@@ -70,7 +70,7 @@ describe('Dashboard', function () {
             ->and($data[0]->tags)->toBeArray()
             ->and($data[0]->tags[0]->name)->toBe('test')
             ->and($data[0]->tags[0]->value)->toBe(10)
-            ->and((float) $data[0]->runtime)->toBeGreaterThan(500);
+            ->and((float) $data[0]->runtime)->toBeGreaterThan(0.9);
     });
 
     test('can get failed jobs', function () {
@@ -96,6 +96,6 @@ describe('Dashboard', function () {
             ->and($data[0]->tags)->toBeArray()
             ->and($data[0]->tags[0]->name)->toBe('test')
             ->and($data[0]->tags[0]->value)->toBe(10)
-            ->and((float) $data[0]->runtime)->toBeGreaterThan(500);
+            ->and((float) $data[0]->runtime)->toBeGreaterThan(0.9);
     });
 });

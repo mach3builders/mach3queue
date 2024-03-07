@@ -14,7 +14,7 @@ class Stopwatch
     public static function check($key): float
     {
         if (isset(self::$timers[$key])) {
-            return round((microtime(true) - self::$timers[$key]) * 1000, 2);
+            return round((microtime(true) - self::$timers[$key]), 2);
         }
 
         return 0;
