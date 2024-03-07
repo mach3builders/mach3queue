@@ -8,10 +8,10 @@ class TrimOldJobs
 {
     public function __invoke(array $config): void
     {
-        $completed_seconds = $config['trim']['completed'];
-        $failed_seconds = $config['trim']['failed'];
+        $completed_minutes = $config['trim']['completed'];
+        $failed_minutes = $config['trim']['failed'];
 
-        Job::olderThanSeconds($completed_seconds)->completed()->delete();
-        Job::olderThanSeconds($failed_seconds)->failed()->delete();
+        Job::olderThanSeconds($completed_minutes * 60)->completed()->delete();
+        Job::olderThanSeconds($failed_minutes * 60)->failed()->delete();
     }
 }

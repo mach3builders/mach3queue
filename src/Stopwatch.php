@@ -6,7 +6,7 @@ class Stopwatch
 {
     public static array $timers = [];
 
-    public static function start(string|int $key): void
+    public static function start(mixed $key): void
     {
         self::$timers[$key] = microtime(true);
     }
