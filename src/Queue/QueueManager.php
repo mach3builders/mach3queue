@@ -20,11 +20,12 @@ class QueueManager
     public function __construct()
     {
         $this->queue = new Queue;
+        static::$instance = $this;
     }
 
     public function setAsGlobal(): void
     {
-        static::$instance = $this;
+
     }
 
     public static function manager(): QueueManager

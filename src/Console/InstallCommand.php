@@ -13,10 +13,21 @@ class InstallCommand extends Command
     {
         $output->writeln('Installing queue.');
 
+        $this->copyConfigFile();
         (new PrepareTables)();
 
         $output->writeln('Done installing.');
 
         return Command::SUCCESS;
+    }
+
+    private function copyConfigFile(): void
+    {
+        $source = __DIR__.'../../config/queue.php';
+        $destination = __DIR__.'/../../../../../queue.php';
+
+        if (!file_exists($destination)) {
+            copy($source, $destination);
+        }
     }
 }

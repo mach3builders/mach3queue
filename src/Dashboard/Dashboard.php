@@ -4,7 +4,6 @@ namespace Mach3queue\Dashboard;
 
 use DOMException;
 use Mach3queue\Job\Job;
-use Mach3queue\Supervisor\SupervisorRepository;
 
 class Dashboard
 {
