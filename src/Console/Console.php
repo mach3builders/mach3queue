@@ -23,7 +23,7 @@ readonly class Console
         match ($this->method($argv)) {
             null => (new QueueCommand($this->config))->run($input, $output),
             'worker' => (new WorkerCommand())->run($input, $output),
-            'supervisor' => (new SupervisorCommand($this->config))->run($input, $output),
+            'supervisor' => (new SupervisorCommand())->run($input, $output),
             'install' => (new InstallCommand)->run($input, $output),
             'terminate' => (new TerminateCommand())->run($input, $output),
             'restart' => (new RestartCommand())->run($input, $output),
