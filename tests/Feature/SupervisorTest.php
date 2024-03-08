@@ -1,7 +1,5 @@
 <?php
 
-use Mach3queue\Queue\FakeEmptyQueueable;
-use Mach3queue\Queue\QueueManager as Queue;
 use Mach3queue\SuperVisor\Supervisor;
 use Mach3queue\Supervisor\SupervisorRepository;
 use Mach3queue\Supervisor\WorkerCommandString;

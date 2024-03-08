@@ -27,6 +27,11 @@ class QueueManager
         static::$instance = $this;
     }
 
+    public static function manager(): QueueManager
+    {
+        return static::$instance;
+    }
+
     public function getInstance(): Queue
     {
         return $this->queue;

@@ -1,6 +1,5 @@
 <?php
 
-use Mach3queue\Job\Job;
 use Mach3queue\Action\BuryJob;
 use Mach3queue\Queue\FakeEmptyQueueable;
 use Mach3queue\Queue\QueueManager as Queue;

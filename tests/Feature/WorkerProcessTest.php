@@ -3,9 +3,6 @@
 namespace Tests\Feature;
 
 use Mach3queue\Process\WorkerProcess;
-use Mach3queue\Supervisor\SupervisorOptions;
-use Mach3queue\Supervisor\WorkerCommandString;
-use Symfony\Component\Process\Process;
 
 describe('Worker Process', function () {
 

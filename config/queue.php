@@ -16,24 +16,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Database Connection
-    |--------------------------------------------------------------------------
-    |
-    | These are the credentials for the database connection, the queue will
-    | ake use of this to keep track of the supervisors and the jobs.
-    |
-    */
-
-    'database' => [
-        'driver' => 'mysql',
-        'host' => 'localhost',
-        'database' => '',
-        'username' => '',
-        'password' => '',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Job Trimming Times
     |--------------------------------------------------------------------------
     |

@@ -1,6 +1,5 @@
 <?php
 
-use Mach3queue\Stopwatch;
 use Mach3queue\Action\RunJob;
 use Mach3queue\Action\BuryJob;
 use Mach3queue\Action\CompleteJob;
