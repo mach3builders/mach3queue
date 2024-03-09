@@ -36,7 +36,7 @@ Now run the following command to publish the configuration file and prepare the 
 And to run the queue you can use the following command. But make sure you have configured the queue first.
 
 ```bash
-./vendor/bin/queue
+./vendor/bin/queue start
 ```
 
 **Note:** If you want to install the package without the `-n` flag see the instructions at the bottom of the page.
@@ -118,19 +118,22 @@ echo Dashboard::parse();
 ```
 
 Make this accessible to view where you want within your own application.
+If you want the jobs to show information about your `Queueable` you have to make the properties public.
+All public properties will be shown as a label.
+
 
 ## Commands
 These are the commands you can run in the terminal to manage the queue.
 
 ```bash
-# To start the queue
-
-./vendor/bin/queue
-```
-```bash
 # To publish the configuration file and prepare the database
 
 ./vendor/bin/queue install
+```
+```bash
+# To start the queue
+
+./vendor/bin/queue start
 ```
 ```bash
 # To gracefully stop all the current queues and create 
@@ -147,6 +150,48 @@ These are the commands you can run in the terminal to manage the queue.
 ---
 
 ## Deamon on a server
+
+To run and monitor the queue on a server on a production environment we need to install and configure `supervisor`.
+It is a process monitor for the Linux operating system, and will automatically restart the queue when it is stopped.
+
+### installation
+To install it on an Ubuntu server, you can use the following command.
+
+```bash
+sudo apt-get install supervisor
+```
+
+### Configuration
+To configure the supervisor you need to create a new file in the `/etc/supervisor/conf.d` directory.
+You can name the file whatever you want, but it needs to have the `.conf` extension.
+This is a configuration file for the supervisor that you can use.
+
+```bash
+[program:queue]
+process_name=%(program_name)s
+command=php /home/websites/example.com/vendor/bin/queue start
+autostart=true
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/home/websites/example.com/queue.log
+stopwaitsecs=3600
+```
+Make sure the `stopwaitsecs` is set to a high number so that the queue has time to finish the jobs before it is stopped.
+See http://supervisord.org/configuration.html for more information on the configuration.
+
+### Starting the supervisor
+
+After you have created the configuration file you can start the supervisor with the following commands.
+
+```bash
+sudo supervisorctl reread
+
+sudo supervisorctl update
+
+sudo supervisorctl start queue
+```
+
+For full documentation on supervisor see http://supervisord.org/index.html
 
 ---
 

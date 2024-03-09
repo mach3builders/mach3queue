@@ -21,7 +21,7 @@ readonly class Console
         $output = new ConsoleOutput;
 
         match ($this->method($argv)) {
-            null => (new QueueCommand($this->config))->run($input, $output),
+            'start' => (new QueueCommand($this->config))->run($input, $output),
             'worker' => (new WorkerCommand())->run($input, $output),
             'supervisor' => (new SupervisorCommand())->run($input, $output),
             'install' => (new InstallCommand)->run($input, $output),
