@@ -10,7 +10,7 @@ Note the repositories section is required to pull the package from github becaus
 ```json
 {
   "require": {
-    "mach3builders/mach3queue": "dev-main"
+    "mach3builders/mach3queue": "^1.0"
   },
   "repositories": [
     {
