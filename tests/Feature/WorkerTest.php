@@ -64,7 +64,7 @@ describe('Worker', function () {
         $worker->run();
 
         // assert
-        expect($worker->run())->toBe(Worker::EXIT_MEMORY_LIMIT);
+        expect($worker->run())->toBe(Worker::$EXIT_MEMORY_LIMIT);
     });
 
     test('can be terminated', function () {
@@ -77,7 +77,7 @@ describe('Worker', function () {
         $worker->terminate();
 
         // assert
-        expect($worker->run())->toBe(Worker::EXIT_ERROR);
+        expect($worker->run())->toBe(Worker::$EXIT_ERROR);
     });
 
     test('can be paused', function () {

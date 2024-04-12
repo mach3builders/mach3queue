@@ -9,6 +9,6 @@ class KillWorker
     public function __invoke(): void
     {
         posix_kill(getmypid(), SIGKILL);
-        exit(Worker::EXIT_ERROR);
+        exit(Worker::$EXIT_ERROR);
     }
 }
