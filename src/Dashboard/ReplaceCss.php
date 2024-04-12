@@ -56,7 +56,7 @@ class ReplaceCss
     private function createStyleTag(DOMElement $link_tag): DOMElement|false
     {
         $href = $link_tag->getAttribute('href');
-        $content = file_get_contents(DashboardHtml::PATH.$href);
+        $content = file_get_contents(DashboardHtml::$path.$href);
 
         return $this->html->createElement('style', $content);
     }

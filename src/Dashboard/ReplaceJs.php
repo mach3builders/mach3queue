@@ -29,7 +29,7 @@ class ReplaceJs
     private function replaceTagWithScript(DOMElement $script_tag): void
     {
         $src = $script_tag->getAttribute('src');
-        $script_content = file_get_contents(DashboardHtml::PATH . $src);
+        $script_content = file_get_contents(DashboardHtml::$path . $src);
 
         $script_tag->removeAttribute('src');
         $script_tag->textContent = $script_content;
