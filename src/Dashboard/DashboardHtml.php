@@ -7,7 +7,7 @@ use DOMException;
 
 class DashboardHtml
 {
-    const string PATH = __DIR__ . '/../../dist/';
+    static string $path = __DIR__ . '/../../dist/';
     private DOMDocument $html;
 
     /**
@@ -25,7 +25,7 @@ class DashboardHtml
     private function initiateHtmlAsDom(): void
     {
         $this->html = new DOMDocument();
-        $this->html->loadHTML(file_get_contents(self::PATH . 'index.html'));
+        $this->html->loadHTML(file_get_contents(self::$path . 'index.html'));
     }
 
     /**

@@ -7,11 +7,11 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 class SupervisorRepository
 {
-    const string TABLE = 'supervisors';
+    static string $table = 'supervisors';
 
     public static function get(string $name): ?object
     {
-        return DB::table(self::TABLE)
+        return DB::table(self::$table)
             ->where('name', 'supervisor:'.$name)
             ->orWhere('name', $name)
             ->first();
@@ -19,7 +19,7 @@ class SupervisorRepository
 
     public static function forget(string $name): void
     {
-        DB::table(self::TABLE)
+        DB::table(self::$table)
             ->where('name', 'supervisor:'.$name)
             ->orWhere('name', $name)
             ->delete();
@@ -27,7 +27,7 @@ class SupervisorRepository
 
     public static function updateOrCreate(Supervisor $supervisor): void
     {
-        DB::table(self::TABLE)->updateOrInsert([
+        DB::table(self::$table)->updateOrInsert([
             'name' => 'supervisor:'.$supervisor->name
         ], [
             'master' => implode(':', explode(':', $supervisor->name, -1)),
@@ -41,7 +41,7 @@ class SupervisorRepository
 
     public static function updateOrCreateMaster(MasterSupervisor $master): void
     {
-        DB::table(self::TABLE)->updateOrInsert([
+        DB::table(self::$table)->updateOrInsert([
             'name' => $master->name,
             'master' => null
         ], [
@@ -54,7 +54,7 @@ class SupervisorRepository
 
     public static function allMasters(): array
     {
-        return DB::table(self::TABLE)
+        return DB::table(self::$table)
             ->where('master', null)
             ->get()
             ->toArray();
@@ -62,7 +62,7 @@ class SupervisorRepository
 
     public static function all(): array
     {
-        return DB::table(self::TABLE)
+        return DB::table(self::$table)
             ->get()
             ->toArray();
     }

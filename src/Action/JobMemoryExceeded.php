@@ -12,6 +12,6 @@ class JobMemoryExceeded
             return;
         }
 
-        (new BuryJob)($job, Job::MEMORY_EXCEEDED_MESSAGE);
+        (new BuryJob)($job, Job::$memory_exceeded_message);
     }
 }

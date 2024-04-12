@@ -8,6 +8,6 @@ class TimeoutJob
 {
     public function __invoke(Job $job): void
     {
-        (new BuryJob)($job, Job::TIMEOUT_MESSAGE);
+        (new BuryJob)($job, Job::$timeout_message);
     }
 }

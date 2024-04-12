@@ -35,8 +35,8 @@ use Illuminate\Support\Carbon;
  */
 class Job extends Model
 {
-    const string TIMEOUT_MESSAGE = 'Job has timed out';
-    const string MEMORY_EXCEEDED_MESSAGE = 'Job memory limit exceeded';
+    static string $timeout_message = 'Job has timed out';
+    static string $memory_exceeded_message = 'Job memory limit exceeded';
     
     public function scopeNextJobForPipelines(Builder $query, array $pipelines): void
     {
