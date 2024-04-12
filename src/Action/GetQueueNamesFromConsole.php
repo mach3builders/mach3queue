@@ -11,6 +11,6 @@ class GetQueueNamesFromConsole
     {
         $queue = $input->getOption('queue');
 
-        return $queue ? explode(',', $queue) : [Queue::DEFAULT_QUEUE];
+        return $queue ? explode(',', $queue) : [Queue::$default_queue];
     }
 }

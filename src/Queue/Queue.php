@@ -7,9 +7,9 @@ use Illuminate\Database\Capsule\Manager as Database;
 
 class Queue
 {
-    const string DEFAULT_QUEUE = 'default';
+    static string $default_queue = 'default';
 
-    private string $queue = self::DEFAULT_QUEUE;
+    private string $queue = self::$default_queue;
 
     private array $pipelines = [];
 
@@ -99,6 +99,6 @@ class Queue
 
     private function resetQueue(): void
     {
-        $this->queue = self::DEFAULT_QUEUE;
+        $this->queue = self::$default_queue;
     }
 }
