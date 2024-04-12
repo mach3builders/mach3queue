@@ -9,7 +9,7 @@ class Queue
 {
     static string $default_queue = 'default';
 
-    private string $queue = self::$default_queue;
+    private string $queue = 'default';
 
     private array $pipelines = [];
 
