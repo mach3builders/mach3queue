@@ -25,6 +25,7 @@ readonly class Console
             'worker' => (new WorkerCommand())->run($input, $output),
             'supervisor' => (new SupervisorCommand())->run($input, $output),
             'install' => (new InstallCommand)->run($input, $output),
+            'publish' => (new PublishCommand)->run($input, $output),
             'terminate' => (new TerminateCommand())->run($input, $output),
             'restart' => (new RestartCommand())->run($input, $output),
             default => null,

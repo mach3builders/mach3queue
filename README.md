@@ -22,38 +22,29 @@ Note the repositories section is required to pull the package from github becaus
 ```
 
 Then run the composer install or update command with the `-n` flag.
+**Note:** If you want to install the package without the `-n` flag see the instructions at the bottom of the page.
 
 ```bash
 composer install -n
 ```
 
-Now run the following command to publish the configuration file and prepare the database.
+Now run the following command to publish the configuration file.
 
 ```bash
-./vendor/bin/queue install
+./vendor/bin/queue publish
 ```
 
-And to run the queue you can use the following command. But make sure you have configured the queue first.
-
-```bash
-./vendor/bin/queue start
-```
-
-**Note:** If you want to install the package without the `-n` flag see the instructions at the bottom of the page.
-
-## Configuration and setup
 In the root of your project you will find a new file called `queue.php`.
 In this file you can setup the supervisors and the workers for the queue.
 The config file explains itself.
-You have
-to at least change the bootstrap location to your own bootstrap file
-so that your whole application is accessible from the queue.
+You have to at least change the bootstrap location to your own bootstrap file
+so that your whole application is accessible from the queue, this has to be a absolute path.
 
 ```php
-'bootstrap' => './vendor/autoload.php'
+'bootstrap' => __DIR__.'/vendor/bootstrap.php',
 ```
 
-Then in your bootstrap you need to configure the queue so you can access it in your application.
+Then in your own bootstrap you need to configure the queue so you can access it in your application.
 
 ```php
 use Mach3queue\Queue\QueueManager as Queue;
@@ -67,6 +58,13 @@ $queue->setConnection([
     'password' => 'password',
 ]);
 ```
+
+Now because the queue has access to your database, run the following command to install the database tables.
+
+```bash
+./vendor/bin/queue install
+```
+
 
 ## Usage
 To add a new job to the queue you can use the `add` method. This will add the given queueable to the default queue.
@@ -126,7 +124,13 @@ All public properties will be shown as a label.
 These are the commands you can run in the terminal to manage the queue.
 
 ```bash
-# To publish the configuration file and prepare the database
+# To publish the configuration file
+
+./vendor/bin/queue publish
+```
+
+```bash
+# To prepare the database
 
 ./vendor/bin/queue install
 ```

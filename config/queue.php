@@ -9,10 +9,11 @@ return [
     | This is the path to the bootstrap file, change this to your own
     | applications bootstrap file, that way, all the jobs will be
     | executed in the same environment as your application.
+    | This has to be an absolute path.
     |
     */
 
-    'bootstrap' => './vendor/autoload.php',
+    'bootstrap' => __DIR__.'/vendor/bootstrap.php',
 
     /*
     |--------------------------------------------------------------------------
