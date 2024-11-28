@@ -2,14 +2,16 @@
 
 namespace Mach3queue\Queue;
 
+use Mach3queue\Job\Job;
+
 /**
- * @method static addJob(Queueable $job, int $delay=0, int $priority=1024, int $time_to_retry=60)
- * @method static getNextJob()
- * @method static deleteJob(int $id)
- * @method static on(string $string)
- * @method static pipelines(string[] $array)
- * @method setConnection(string[] $array)
- * @method static getTotalJobsInQueue()
+ * @method static Job addJob(Queueable $job, int $delay=0, int $priority=1024, int $time_to_retry=60)
+ * @method static ?Job getNextJob()
+ * @method static void deleteJob(int $id)
+ * @method static static on(string $string)
+ * @method static static pipelines(string[] $array)
+ * @method static void setConnection(string[] $array)
+ * @method static int getTotalJobsInQueue()
  */
 class QueueManager
 {
