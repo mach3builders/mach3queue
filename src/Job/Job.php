@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * @method static nextJobForPipeLines(array|string[] $getPipelines)
- * @method static where(string $string, int $id)
- * @method static olderThanSeconds(int $completed_seconds)
- * @method static completed()
- * @method static failed()
- * @method static running()
- * @method static pending()
- * @method static queuesWorkload()
+ * @method static Job nextJobForPipeLines(array|string[] $getPipelines)
+ * @method static Job where(string $string, int $id)
+ * @method static Job olderThanSeconds(int $completed_seconds)
+ * @method static Job completed()
+ * @method static Job failed()
+ * @method static Job running()
+ * @method static Job pending()
+ * @method static Job queuesWorkload()
  * @property int $id
  * @property string $queue
  * @property string $payload
