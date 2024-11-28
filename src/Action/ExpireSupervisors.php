@@ -15,7 +15,7 @@ class ExpireSupervisors
                 ->isAfter($supervisor->updated_at);
 
             if (! $expired) {
-                return;
+                continue;
             }
 
             SupervisorRepository::forget($supervisor->name);
