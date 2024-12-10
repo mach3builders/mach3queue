@@ -4,7 +4,7 @@ A php queue system
 
 ## Installation
 
-First, add the package in composer and install it.
+First, add the package in composer.
 ```json
 {
   "require": {
@@ -14,7 +14,7 @@ First, add the package in composer and install it.
 ```
 
 ```bash
-composer install -n
+composer install
 ```
 
 Now run the following command to publish the configuration file.
