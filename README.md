@@ -4,25 +4,14 @@ A php queue system
 
 ## Installation
 
-First, add the package in composer.
-Note the repositories section is required to pull the package from github because it is a private repository.
-
+First, add the package in composer and install it.
 ```json
 {
   "require": {
     "mach3builders/mach3queue": "^1.0"
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url":  "git@github.com:mach3builders/mach3queue.git"
-    }
-  ]
 }
 ```
-
-Then run the composer install or update command with the `-n` flag.
-**Note:** If you want to install the package without the `-n` flag see the instructions at the bottom of the page.
 
 ```bash
 composer install -n
@@ -196,32 +185,3 @@ sudo supervisorctl start queue
 ```
 
 For full documentation on supervisor see http://supervisord.org/index.html
-
----
-
-## Installation without the `-n` flag
-The `-n` flag is used to avoid the token request.
-If you want to install it without the `-n` flag you have to set up a personal access token.
-The way you set up a personal access token is by starting to running it without the `-n` flag. 
-
-```bash
-composer install
-```
-And after that you will be prompted with the message saying 
-
-```bash
-Could not fetch https://api.github.com/repos/mach3builders/mach3queue, please review your configured GitHub OAuth token or enter a new one to access private repos
-When working with _public_ GitHub repositories only, head to "https://github.com/settings/tokens/new?scopes=&description=x" to retrieve a token.
-This token will have read-only permission for public information only.
-When you need to access _private_ GitHub repositories as well, go to "https://github.com/settings/tokens/new?scopes=repo&description=x"
-Note that such tokens have broad read/write permissions on your behalf, even if not needed by Composer.
-Tokens will be stored in plain text in "x/.composer/auth.json" for future use by Composer.
-For additional information, check https://getcomposer.org/doc/articles/authentication-for-private-packages.md#github-oauth
-Token (hidden):
-```
-Click the second link which will open a new tab in your browser with all the `repo` checkboxes checked.
-If that is not the case, check all of them yourself. 
-Then click the `Generate token` button.
-Then copy the token and paste it in the terminal and press enter.
-Now you are all set to use the package. 
-
