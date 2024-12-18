@@ -2,7 +2,7 @@
 
 namespace Mach3queue\Console;
 
-use Mach3queue\SuperVisor\Supervisor;
+use Mach3queue\Supervisor\Supervisor;
 use Mach3queue\Supervisor\SupervisorOptions;
 use Symfony\Component\Console\Command\Command;
 use Mach3queue\Action\GetQueueNamesFromConsole;

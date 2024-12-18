@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Fakes;
 
-use Mach3queue\SuperVisor\Supervisor;
+use Mach3queue\Supervisor\Supervisor;
 
 class SupervisorWithFakeExit extends Supervisor
 {

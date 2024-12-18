@@ -1,6 +1,6 @@
 <?php
 
-use Mach3queue\SuperVisor\Supervisor;
+use Mach3queue\Supervisor\Supervisor;
 use Mach3queue\Supervisor\SupervisorRepository;
 use Mach3queue\Supervisor\WorkerCommandString;
 use Tests\Feature\Fakes\SupervisorWithFakeExit;
