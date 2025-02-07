@@ -6,6 +6,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use function Opis\Closure\{serialize, unserialize};
 
 /**
  * @method static Job nextJobForPipeLines(array|string[] $getPipelines)
@@ -37,7 +38,7 @@ class Job extends Model
 {
     static string $timeout_message = 'Job has timed out';
     static string $memory_exceeded_message = 'Job memory limit exceeded';
-    
+
     public function scopeNextJobForPipelines(Builder $query, array $pipelines): void
     {
         $query->whereIn('queue', $pipelines)
@@ -152,5 +153,18 @@ class Job extends Model
         if ($this->is_buried == 1) {
             return Status::FAILED;
         }
+
+        return Status::UNKNOWN;
+    }
+
+    public function after(callable $callback): static
+    {
+        $payload = unserialize($this->payload);
+        $payload->after = $callback;
+
+        $this->payload = serialize($payload);
+        $this->save();
+
+        return $this;
     }
 }

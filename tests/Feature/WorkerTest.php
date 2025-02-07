@@ -3,6 +3,7 @@
 use Mach3queue\Action\KillWorker;
 use Mach3queue\Job\Job;
 use Mach3queue\Job\Status;
+use Mach3queue\Queue\FakeEmptyQueueable;
 use Mach3queue\Queue\FakeSleepQueueable;
 use Mach3queue\Queue\QueueManager as Queue;
 use Mach3queue\Worker\Worker;
@@ -116,5 +117,24 @@ describe('Worker', function () {
 
         // assert
         expect($job->refresh()->status())->toBe(Status::FAILED);
+    });
+
+    test('can call callable after job', function () {
+        // setup
+        Queue::addJob(new FakeEmptyQueueable)
+            ->after(function (Job $job) {
+                $job->message = 'after called successfully';
+            });
+
+        $queue = $this->queue->getInstance();
+        $actions = new WorkerActions;
+        $options = new WorkerOptions(stop_when_empty: true);
+
+        // run
+        $worker = new Worker($queue, 60, $actions, $options);
+        $worker->run();
+
+        // assert
+        expect(Job::first()->message)->toBe('after called successfully');
     });
 });

@@ -89,7 +89,7 @@ describe('Dashboard', function () {
 
         // assert
         $data = json_decode(Dashboard::parse(['data' => 'failed']));
-
+        ray($data);
         expect($data)->toHaveCount(5)
             ->and($data[0]->name)->toBeString()
             ->and($data[0]->tags)->toBeArray()

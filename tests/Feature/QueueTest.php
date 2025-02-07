@@ -80,5 +80,4 @@ describe('Queue', function () {
         expect($job->is_buried)->toBe(1)
             ->and($job->message)->toBe('test');
     });
-
 });

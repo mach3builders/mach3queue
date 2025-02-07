@@ -4,6 +4,7 @@ namespace Mach3queue\Action;
 
 use Mach3queue\Job\Job;
 use Mach3queue\Stopwatch;
+use function Opis\Closure\{unserialize};
 
 class RunJob
 {
@@ -18,6 +19,10 @@ class RunJob
 
         $this->echoJobIsRunning();
         $this->payload->handle();
+
+        if ($this->payload->after instanceof \Closure) {
+            ($this->payload->after)($this->job);
+        }
     }
 
     private function echoJobIsRunning(): void

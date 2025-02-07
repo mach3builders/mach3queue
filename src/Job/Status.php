@@ -9,4 +9,5 @@ enum Status: string
     case FAILED = 'failed';
     case COMPLETED = 'completed';
     case STOPPED = 'stopped';
+    case UNKNOWN = 'unknown';
 }
