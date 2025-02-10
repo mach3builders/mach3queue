@@ -94,6 +94,39 @@ class FakeEmptyQueueable implements Queueable
 }
 ```
 
+### After event
+
+You can add a method to the job to be executed after the job has finished.
+With this you can use your own logic after a job has either succeeded or failed.
+
+```php
+use Mach3queue\Job;
+use Mach3queue\Queue\QueueManager as Queue;
+
+Queue::addJob(new Queueable)
+    ->after(function (Job $job) {
+        // Do something
+    });
+```
+
+The job has a method called status that will return an enum of the status of the job.
+
+```php
+use Mach3queue\Job;
+use Mach3queue\Job\Status;
+
+$job->status();
+
+// Returns: Mach3queue\Job\Status
+Status::COMPLETED;
+Status::FAILED;
+
+// these also exists, but will probably never be the case in the after call.
+Status::PROCESSING;
+Status::PENDING;
+Status::UNKNOWN;
+```
+
 ## Dashboard
 The package comes with a dashboard to monitor the queue.
 To view it you can get the html from it through the following code:

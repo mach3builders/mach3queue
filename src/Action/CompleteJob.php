@@ -5,6 +5,7 @@ namespace Mach3queue\Action;
 use Mach3queue\Stopwatch;
 use Illuminate\Support\Carbon;
 use Mach3queue\Job\Job;
+use function Opis\Closure\{unserialize};
 
 class CompleteJob
 {
@@ -15,9 +16,14 @@ class CompleteJob
     {
         $this->job = $job;
         $this->payload = unserialize($job->payload);
+        $after = $job->callback ? unserialize($job->callback) : null;
 
         $this->completeAction();
         $this->printFinishedJob();
+
+        if (is_callable($after)) {
+            ($after)($this->job);
+        }
     }
 
     private function completeAction(): void

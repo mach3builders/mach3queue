@@ -124,6 +124,7 @@ describe('Worker', function () {
         Queue::addJob(new FakeEmptyQueueable)
             ->after(function (Job $job) {
                 $job->message = 'after called successfully';
+                $job->save();
             });
 
         $queue = $this->queue->getInstance();

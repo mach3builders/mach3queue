@@ -19,10 +19,6 @@ class RunJob
 
         $this->echoJobIsRunning();
         $this->payload->handle();
-
-        if ($this->payload->after instanceof \Closure) {
-            ($this->payload->after)($this->job);
-        }
     }
 
     private function echoJobIsRunning(): void

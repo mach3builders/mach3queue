@@ -5,6 +5,7 @@ namespace Mach3queue\Action;
 use Mach3queue\Stopwatch;
 use Illuminate\Support\Carbon;
 use Mach3queue\Job\Job;
+use function Opis\Closure\{unserialize};
 
 class BuryJob
 {
@@ -17,9 +18,14 @@ class BuryJob
         $this->job = $job;
         $this->payload = unserialize($job->payload);
         $this->message = $message;
+        $after = $job->callback ? unserialize($job->callback) : null;
 
         $this->buryJob();
         $this->echoBuriedJob();
+
+        if (is_callable($after)) {
+            ($after)($this->job);
+        }
     }
 
     private function buryJob(): void

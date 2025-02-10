@@ -22,6 +22,7 @@ class PrepareTables
             $table->id();
             $table->string('queue');
             $table->longText('payload');
+            $table->longText('callback')->nullable();
             $table->dateTime('added_dt');
             $table->dateTime('send_dt');
             $table->integer('priority')->default(0);

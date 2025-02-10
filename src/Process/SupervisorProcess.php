@@ -17,7 +17,7 @@ class SupervisorProcess extends QueueProcess
     public function __construct(
         SupervisorOptions $options,
         Process $process,
-        Closure $output = null
+        ?Closure $output = null
     ) {
         $this->options = $options;
         $this->name = $options->name;

@@ -20,6 +20,7 @@ use function Opis\Closure\{serialize, unserialize};
  * @property int $id
  * @property string $queue
  * @property string $payload
+ * @property string $callback
  * @property string $message
  * @property int $priority
  * @property int $is_buried
@@ -159,10 +160,7 @@ class Job extends Model
 
     public function after(callable $callback): static
     {
-        $payload = unserialize($this->payload);
-        $payload->after = $callback;
-
-        $this->payload = serialize($payload);
+        $this->callback = serialize($callback);
         $this->save();
 
         return $this;
