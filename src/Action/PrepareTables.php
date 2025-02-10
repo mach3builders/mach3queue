@@ -15,6 +15,11 @@ class PrepareTables
     private function createJobsTable(): void
     {
         if (Database::schema()->hasTable('jobs')) {
+            if (! Database::schema()->hasColumn('jobs', 'callback')) {
+                Database::schema()->table('jobs', static function ($table) {
+                    $table->longText('callback')->after('payload')->nullable();
+                });
+            }
             return;
         }
 
