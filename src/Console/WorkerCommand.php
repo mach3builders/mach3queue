@@ -45,8 +45,8 @@ class WorkerCommand extends Command
                 stop_when_empty: $input->getOption('stop-when-empty'),
                 memory: $input->getOption('memory') ?? 128,
             ),
-            'max_retries' => $input->getOption('max-retries') ?? 3,
-            'time_to_retry' => $input->getOption('time-to-retry') ?? 60,
+            'maxRetries' => $input->getOption('max-retries') ?? 3,
+            'timeToRetry' => $input->getOption('time-to-retry') ?? 60,
         ];
     }
 

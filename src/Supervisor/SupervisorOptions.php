@@ -18,7 +18,7 @@ class SupervisorOptions
         public int $balanceCooldown = 5,
         public int $maxWorkload = 5,
         public int $maxRetries = 3,
-        public int $timeToRetry = 300,
+        public int $timeToRetry = 60,
     ) {
     }
 
