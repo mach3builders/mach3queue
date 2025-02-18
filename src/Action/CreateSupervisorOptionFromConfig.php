@@ -7,7 +7,7 @@ use Mach3queue\Supervisor\SupervisorOptions;
 
 class CreateSupervisorOptionFromConfig
 {
-    static function create(
+    public static function create(
         MasterSupervisor $master,
         string $name,
         array $options

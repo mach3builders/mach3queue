@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\CarbonImmutable;
 use Mach3queue\Action\BuryJob;
 use Mach3queue\Queue\FakeEmptyQueueable;
 use Mach3queue\Queue\QueueManager as Queue;
@@ -79,5 +80,32 @@ describe('Queue', function () {
         // assert
         expect($job->is_buried)->toBe(1)
             ->and($job->message)->toBe('test');
+    });
+
+    test('can limit the maximum tries', function () {
+        // setup
+        Queue::manager()->getInstance()->maxRetries = 3;
+        $job = Queue::addJob(new FakeEmptyQueueable);
+        $job->attempts = 3;
+        $job->time_to_retry_dt = CarbonImmutable::now()->subSecond();
+        $job->save();
+
+        expect(Queue::getNextJob())->toBeEmpty();
+
+        $job->attempts = 2;
+        $job->save();
+
+        expect(Queue::getNextJob())->toBeObject();
+    });
+
+    test('can retry a failed job after retry timer', function () {
+        $job = Queue::addJob(new FakeEmptyQueueable);
+
+        $job->time_to_retry_dt = CarbonImmutable::now()->subSeconds(60);
+        $job->buried_dt = CarbonImmutable::now();
+        $job->is_buried = true;
+        $job->save();
+
+        expect(Queue::getNextJob())->toBeObject();
     });
 });

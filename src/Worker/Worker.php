@@ -7,8 +7,8 @@ use Mach3queue\Queue\Queue;
 
 class Worker
 {
-    static int $EXIT_ERROR = 1;
-    static int $EXIT_MEMORY_LIMIT = 12;
+    public static int $EXIT_ERROR = 1;
+    public static int $EXIT_MEMORY_LIMIT = 12;
 
     public bool $should_quit = false;
     public bool $working = true;
@@ -18,11 +18,16 @@ class Worker
         private readonly int $timeout = 60,
         private readonly WorkerActions $actions = new WorkerActions,
         private readonly WorkerOptions $options = new WorkerOptions,
+        private readonly int $maxRetries = 3,
+        private readonly int $timeToRetry = 60
     ) {
     }
 
     public function run(): int
     {
+        $this->queue->maxRetries = $this->maxRetries;
+        $this->queue->timeToRetry = $this->timeToRetry;
+
         $this->listenForSignalsOnWorker();
 
         while(true) {
@@ -99,7 +104,7 @@ class Worker
     {
         return match (true) {
             $this->memoryExceeded() => self::$EXIT_MEMORY_LIMIT,
-            $this->stopWhenEmpty($job) => self::$EXIT_ERROR,
+            $this->stopWhenEmpty($job),
             $this->should_quit => self::$EXIT_ERROR,
             default => 0,
         };
@@ -123,7 +128,7 @@ class Worker
         try {
             $this->actions->runJob($job);
             $this->actions->completeJob($job);
-        } catch(\Exception $e) {
+        } catch(\Throwable $e) {
             $this->actions->buryJob($job, $e->getMessage());
         }
     }

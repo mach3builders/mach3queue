@@ -9,10 +9,12 @@ class QueueCommandString
     public static function toWorkerOptionsString(SupervisorOptions $options): string
     {
         return sprintf(
-            '-- --queue=%s --timeout=%s --memory=%s',
+            '-- --queue=%s --timeout=%s --memory=%s --max-retries=%s --time-to-retry=%s',
             implode(',', $options->queues),
             $options->timeout,
             $options->memory,
+            $options->maxRetries,
+            $options->timeToRetry
         );
     }
 

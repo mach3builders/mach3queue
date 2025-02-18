@@ -24,16 +24,15 @@ class WorkerCommand extends Command
                 new InputOption('queue', 'q', InputOption::VALUE_REQUIRED),
                 new InputOption('timeout', 't', InputOption::VALUE_OPTIONAL),
                 new InputOption('memory', 'm', InputOption::VALUE_OPTIONAL),
+                new InputOption('max-retries', 'mr', InputOption::VALUE_OPTIONAL),
+                new InputOption('time-to-retry', 'ttr', InputOption::VALUE_OPTIONAL),
             ])
         );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $worker_params = $this->workerParams($input);
-        $worker = new Worker(...$worker_params);
-        
-        return $worker->run();
+        return (new Worker(...$this->workerParams($input)))->run();
     }
 
     private function workerParams(InputInterface $input): array
@@ -46,6 +45,8 @@ class WorkerCommand extends Command
                 stop_when_empty: $input->getOption('stop-when-empty'),
                 memory: $input->getOption('memory') ?? 128,
             ),
+            'max_retries' => $input->getOption('max-retries') ?? 3,
+            'time_to_retry' => $input->getOption('time-to-retry') ?? 60,
         ];
     }
 

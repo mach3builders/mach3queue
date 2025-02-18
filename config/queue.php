@@ -53,6 +53,8 @@ return [
             'memory' => 128,            // the memory limit in megabytes for the worker before it will terminate itself.
             'balance_cooldown' => 5,    // the time in seconds before the supervisor will check the workload again.
             'max_workload' => 5,        // the maximum workload before the supervisor will scale up.
+            'max_retries' => 3,         // the maximum number of times a job will be retried before it will be buried permanently.
+            'time_to_retry' => 60,      // the time in seconds before a job is eligible again to be retried.
         ],
     ],
 ];

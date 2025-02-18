@@ -2,6 +2,8 @@
 
 namespace Mach3queue\Supervisor;
 
+use JsonException;
+
 class SupervisorOptions
 {
     public function __construct(
@@ -15,6 +17,8 @@ class SupervisorOptions
         public string $directory = '',
         public int $balanceCooldown = 5,
         public int $maxWorkload = 5,
+        public int $maxRetries = 3,
+        public int $timeToRetry = 300,
     ) {
     }
 
@@ -29,12 +33,15 @@ class SupervisorOptions
             minProcesses: $config['min_processes'] ?? 1,
             directory: $config['directory'] ?? self::binDir(),
             balanceCooldown: $config['balance_cooldown'] ?? 5,
+            maxWorkload: $config['max_workload'] ?? 5,
+            maxRetries: $config['max_retries'] ?? 3,
+            timeToRetry: $config['time_to_retry'] ?? 60
         );
     }
 
     public static function binDir(): string
     {
-        return realpath(__DIR__.'/../../../../../vendor/bin');
+        return dirname(__DIR__, 5) . '/vendor/bin';
     }
 
     public function toSupervisorCommand(): string
@@ -52,6 +59,9 @@ class SupervisorOptions
         return $this->name.':'.$this->master;
     }
 
+    /**
+     * @throws JsonException
+     */
     public function toJson(): string
     {
         return json_encode([
@@ -63,6 +73,9 @@ class SupervisorOptions
             'minProcesses' => $this->minProcesses,
             'directory' => $this->directory,
             'balanceCooldown' => $this->balanceCooldown,
-        ]);
+            'maxWorkload' => $this->maxWorkload,
+            'maxRetries' => $this->maxRetries,
+            'timeToRetry' => $this->timeToRetry
+        ], JSON_THROW_ON_ERROR);
     }
 }

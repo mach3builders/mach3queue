@@ -6,10 +6,10 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use function Opis\Closure\{serialize, unserialize};
+use function Opis\Closure\{serialize};
 
 /**
- * @method static Job nextJobForPipeLines(array|string[] $getPipelines)
+ * @method static Job nextJobForPipeLines(array|string[] $getPipelines, int $maxRetries = 3, int $timeToRetry = 60)
  * @method static Job where(string $string, int $id)
  * @method static Job olderThanSeconds(int $completed_seconds)
  * @method static Job completed()
@@ -17,6 +17,7 @@ use function Opis\Closure\{serialize, unserialize};
  * @method static Job running()
  * @method static Job pending()
  * @method static Job queuesWorkload()
+ * @method lockForUpdate()
  * @property int $id
  * @property string $queue
  * @property string $payload
@@ -37,17 +38,19 @@ use function Opis\Closure\{serialize, unserialize};
  */
 class Job extends Model
 {
-    static string $timeout_message = 'Job has timed out';
-    static string $memory_exceeded_message = 'Job memory limit exceeded';
+    public static string $timeout_message = 'Job has timed out';
+    public static string $memory_exceeded_message = 'Job memory limit exceeded';
 
-    public function scopeNextJobForPipelines(Builder $query, array $pipelines): void
-    {
+    public function scopeNextJobForPipelines(
+        Builder $query,
+        array $pipelines,
+        int $maxRetries = 3,
+    ): void {
         $query->whereIn('queue', $pipelines)
             ->sendBeforeNow()
-            ->isNotBuried()
             ->isNotComplete()
             ->isNotReservedOrReservedTimeExpired()
-            ->isNotAttemptedOrTimeToRetryIsNow()
+            ->isNotAttemptedOrTimeToRetryIsNow($maxRetries)
             ->orderBy('priority');
     }
 
@@ -66,11 +69,13 @@ class Job extends Model
         $query->where('is_complete', 0);
     }
 
-    public function scopeIsNotReservedOrReservedTimeExpired(Builder $query): void
-    {
-        $query->where(function ($query) {
-            $query->isNotReserved()->orWhere(function ($query) {
-                $query->reservedIsExpired();
+    public function scopeIsNotReservedOrReservedTimeExpired(
+        Builder $query,
+        int $timeToRetry = 60
+    ): void {
+        $query->where(function ($query) use ($timeToRetry) {
+            $query->isNotReserved()->orWhere(function ($query) use ($timeToRetry) {
+                $query->reservedIsExpired($timeToRetry);
             });
         });
     }
@@ -82,16 +87,20 @@ class Job extends Model
 
     public function scopeReservedIsExpired(Builder $query): void
     {
-        $query->where('is_reserved', 1)
-            ->where('reserved_dt', '<=', CarbonImmutable::now()->subMinutes(5));
+        $time = CarbonImmutable::now()->subMinutes(5);
+
+        $query->where('is_reserved', 1)->where('reserved_dt', '<=', $time);
     }
 
-    public function scopeIsNotAttemptedOrTimeToRetryIsNow(Builder $query): void
-    {
-        $query->where(function ($query) {
-            $query->isNotAttempted()->orWhere(function ($query) {
-                $query->timeToRetryIsNow();
-            });
+    public function scopeIsNotAttemptedOrTimeToRetryIsNow(
+        Builder $query,
+        int $maxRetries = 3
+    ): void {
+        $query->where(function ($query) use ($maxRetries) {
+            $query->isNotAttempted()
+                ->orWhere(function ($query) use ($maxRetries) {
+                    $query->timeToRetryIsNow($maxRetries);
+                });
         });
     }
 
@@ -100,9 +109,10 @@ class Job extends Model
         $query->where('attempts', 0);
     }
 
-    public function scopeTimeToRetryIsNow(Builder $query): void
+    public function scopeTimeToRetryIsNow(Builder $query, int $maxRetries = 3): void
     {
-        $query->where('attempts', '>=', 1)
+        $query->where('attempts', '>', 0)
+            ->where('attempts', '<', $maxRetries)
             ->where('time_to_retry_dt', '<=', CarbonImmutable::now());
     }
 
