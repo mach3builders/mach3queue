@@ -8,7 +8,7 @@ First, add the package in composer.
 ```json
 {
   "require": {
-    "mach3builders/mach3queue": "^1.0"
+    "mach3builders/mach3queue": "^1.1"
   },
 }
 ```
