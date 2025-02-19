@@ -8,16 +8,11 @@ use Illuminate\Database\Capsule\Manager as Database;
 class Queue
 {
     public static string $default_queue = 'default';
-
     private string $queue = 'default';
-
     private array $pipelines = [];
-
     private QueueActions $actions;
-
     public int $maxRetries = 3;
-
-    public int $timeToRetry = 60;
+    public int $timeout = 60;
 
     public function __construct(QueueActions $actions = new QueueActions)
     {
@@ -43,6 +38,20 @@ class Queue
         return $this;
     }
 
+    public function setMaxRetries(int $retries): static
+    {
+        $this->maxRetries = $retries;
+
+        return $this;
+    }
+
+    public function setTimeout(int $seconds): static
+    {
+        $this->timeout = $seconds;
+
+        return $this;
+    }
+
     public function addJob(
         Queueable $job,
         int $delay = 0,
@@ -53,7 +62,6 @@ class Queue
             payload: serialize($job),
             delay: $delay,
             priority: $priority,
-            time_to_retry: $this->timeToRetry,
         );
 
         $this->resetQueue();
@@ -69,13 +77,14 @@ class Queue
     public function getNextJob(): ?Job
     {
         $job = null;
+        
         Database::beginTransaction();
 
         try {
             $job = Job::nextJobForPipeLines(
                     $this->getPipelines(),
                     $this->maxRetries,
-                    $this->timeToRetry
+                    $this->timeout,
                 )
                 ->lockForUpdate()
                 ->first();

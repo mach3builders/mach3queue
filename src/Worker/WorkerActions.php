@@ -11,13 +11,12 @@ use Mach3queue\Action\TimeoutJob;
 use Mach3queue\Action\JobMemoryExceeded;
 
 /**
- * @method timeoutJob(Job $job)
+ * @method timeoutJob(Job $job, int $time_to_retry)
  * @method killWorker()
  * @method runJob(Job $job)
  * @method completeJob(Job $job)
- * @method buryJob(Job $job, string $message)
- * @method jobMemoryExceeded(Job|null $job)
- * @method startTimingJob(Job $job)
+ * @method buryJob(Job $job, string $message, int $time_to_retry)
+ * @method jobMemoryExceeded(Job|null $job, int $time_to_retry)
  */
 class WorkerActions
 {

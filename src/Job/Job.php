@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 use function Opis\Closure\{serialize};
 
 /**
- * @method static Job nextJobForPipeLines(array|string[] $getPipelines, int $maxRetries = 3, int $timeToRetry = 60)
+ * @method static Job nextJobForPipeLines(array|string[] $getPipelines, int $maxRetries = 3, int $timeout = 60)
  * @method static Job where(string $string, int $id)
  * @method static Job olderThanSeconds(int $completed_seconds)
  * @method static Job completed()
@@ -45,11 +45,12 @@ class Job extends Model
         Builder $query,
         array $pipelines,
         int $maxRetries = 3,
+        int $timeToRetry = 60
     ): void {
         $query->whereIn('queue', $pipelines)
             ->sendBeforeNow()
             ->isNotComplete()
-            ->isNotReservedOrReservedTimeExpired()
+            ->isNotReservedOrReservedTimeExpired($timeToRetry)
             ->isNotAttemptedOrTimeToRetryIsNow($maxRetries)
             ->orderBy('priority');
     }
@@ -71,11 +72,11 @@ class Job extends Model
 
     public function scopeIsNotReservedOrReservedTimeExpired(
         Builder $query,
-        int $timeToRetry = 60
+        int $timeout = 60
     ): void {
-        $query->where(function ($query) use ($timeToRetry) {
-            $query->isNotReserved()->orWhere(function ($query) use ($timeToRetry) {
-                $query->reservedIsExpired($timeToRetry);
+        $query->where(function ($query) use ($timeout) {
+            $query->isNotReserved()->orWhere(function ($query) use ($timeout) {
+                $query->reservedIsExpired($timeout);
             });
         });
     }
@@ -85,9 +86,9 @@ class Job extends Model
         $query->where('is_reserved', 0);
     }
 
-    public function scopeReservedIsExpired(Builder $query): void
+    public function scopeReservedIsExpired(Builder $query, int $timeout): void
     {
-        $time = CarbonImmutable::now()->subMinutes(5);
+        $time = CarbonImmutable::now()->subSeconds($timeout);
 
         $query->where('is_reserved', 1)->where('reserved_dt', '<=', $time);
     }

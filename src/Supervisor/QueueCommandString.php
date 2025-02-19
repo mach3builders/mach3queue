@@ -2,8 +2,6 @@
 
 namespace Mach3queue\Supervisor;
 
-use Mach3queue\Supervisor\SupervisorOptions;
-
 class QueueCommandString
 {
     public static function toWorkerOptionsString(SupervisorOptions $options): string
@@ -21,7 +19,7 @@ class QueueCommandString
     public static function toSupervisorOptionsString(SupervisorOptions $options): string
     {
         return sprintf(
-            '-- --name=%s --max-processes=%s --min-processes=%s --queue=%s --master=%s --directory=%s --timeout=%s',
+            '-- --name=%s --max-processes=%s --min-processes=%s --queue=%s --master=%s --directory=%s --timeout=%s --max-retries=%s --time-to-retry=%s',
             $options->name,
             $options->maxProcesses,
             $options->minProcesses,
@@ -29,6 +27,8 @@ class QueueCommandString
             $options->master,
             $options->directory,
             $options->timeout,
+            $options->maxRetries,
+            $options->timeToRetry,
         );
     }
 }

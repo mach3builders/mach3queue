@@ -13,11 +13,14 @@ class BuryJob
     private mixed $payload;
     private string $message;
 
-    public function __invoke(Job $job, string $message): void
+    private int $time_to_retry;
+
+    public function __invoke(Job $job, string $message, int $time_to_retry): void
     {
         $this->job = $job;
         $this->payload = unserialize($job->payload);
         $this->message = $message;
+        $this->time_to_retry = $time_to_retry;
         $after = $job->callback ? unserialize($job->callback) : null;
 
         $this->buryJob();
@@ -36,6 +39,7 @@ class BuryJob
         $this->job->reserved_dt = null;
         $this->job->message = $this->message;
         $this->job->runtime = Stopwatch::check($this->job->id);
+        $this->job->time_to_retry_dt = Carbon::now()->addSeconds($this->time_to_retry);
         $this->job->save();
 
         Stopwatch::forget($this->job->id);

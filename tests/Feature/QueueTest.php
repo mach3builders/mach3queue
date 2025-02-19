@@ -73,7 +73,7 @@ describe('Queue', function () {
         $job = addFakeJobToQueue();
 
         // run
-        (new BuryJob)($job, 'test');
+        (new BuryJob)($job, 'test', 60);
 
         $job->refresh();
 

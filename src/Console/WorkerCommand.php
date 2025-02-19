@@ -45,7 +45,6 @@ class WorkerCommand extends Command
                 stop_when_empty: $input->getOption('stop-when-empty'),
                 memory: $input->getOption('memory') ?? 128,
             ),
-            'maxRetries' => $input->getOption('max-retries') ?? 3,
             'timeToRetry' => $input->getOption('time-to-retry') ?? 60,
         ];
     }
@@ -53,7 +52,13 @@ class WorkerCommand extends Command
     private function createQueue(InputInterface $input): Queue
     {
         $queues = GetQueueNamesFromConsole::get($input);
+        $retries = $input->getOption('max-retries') ?? 3;
+        $timeout = $input->getOption('timeout') ?? 60;
 
-        return QueueManager::manager()->getInstance()->pipelines($queues);
+        return QueueManager::manager()
+            ->getInstance()
+            ->setMaxRetries($retries)
+            ->setTimeout($timeout)
+            ->pipelines($queues);
     }
 }

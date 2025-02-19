@@ -6,12 +6,12 @@ use Mach3queue\Job\Job;
 
 class JobMemoryExceeded
 {
-    public function __invoke(?Job $job): void
+    public function __invoke(?Job $job, int $time_to_retry): void
     {
         if (empty($job)) {
             return;
         }
 
-        (new BuryJob)($job, Job::$memory_exceeded_message);
+        (new BuryJob)($job, Job::$memory_exceeded_message, $time_to_retry);
     }
 }

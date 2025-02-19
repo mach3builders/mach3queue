@@ -24,6 +24,8 @@ class SupervisorCommand extends Command
                 new InputOption('master', 'm', InputOption::VALUE_REQUIRED),
                 new InputOption('timeout', 't', InputOption::VALUE_OPTIONAL),
                 new InputOption('directory', 'd', InputOption::VALUE_OPTIONAL),
+                new InputOption('max-retries', 'mr', InputOption::VALUE_OPTIONAL),
+                new InputOption('time-to-retry', 'ttr', InputOption::VALUE_OPTIONAL),
             ])
         );
     }
@@ -49,6 +51,8 @@ class SupervisorCommand extends Command
             maxProcesses: $input->getOption('max-processes'),
             minProcesses: $input->getOption('min-processes'),
             directory: $input->getOption('directory') ?? __DIR__,
+            maxRetries: $input->getOption('max-retries'),
+            timeToRetry: $input->getOption('time-to-retry'),
         );
     }
 }

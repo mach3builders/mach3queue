@@ -9,7 +9,6 @@ class Worker
 {
     public static int $EXIT_ERROR = 1;
     public static int $EXIT_MEMORY_LIMIT = 12;
-
     public bool $should_quit = false;
     public bool $working = true;
 
@@ -18,16 +17,12 @@ class Worker
         private readonly int $timeout = 60,
         private readonly WorkerActions $actions = new WorkerActions,
         private readonly WorkerOptions $options = new WorkerOptions,
-        private readonly int $maxRetries = 3,
         private readonly int $timeToRetry = 60
     ) {
     }
 
     public function run(): int
     {
-        $this->queue->maxRetries = $this->maxRetries;
-        $this->queue->timeToRetry = $this->timeToRetry;
-
         $this->listenForSignalsOnWorker();
 
         while(true) {
@@ -49,7 +44,7 @@ class Worker
             }
 
             $this->registerTimeoutHandlerForJob(function() use ($job) {
-                $this->actions->timeoutJob($job);
+                $this->actions->timeoutJob($job, $this->timeToRetry);
                 $this->actions->killWorker();
             });
             
@@ -114,7 +109,10 @@ class Worker
     {
         match ($stop) {
             self::$EXIT_ERROR => null,
-            self::$EXIT_MEMORY_LIMIT => $this->actions->jobMemoryExceeded($job),
+            self::$EXIT_MEMORY_LIMIT => $this->actions->jobMemoryExceeded(
+                $job,
+                $this->timeToRetry
+            ),
         };
     }
 
@@ -129,7 +127,7 @@ class Worker
             $this->actions->runJob($job);
             $this->actions->completeJob($job);
         } catch(\Throwable $e) {
-            $this->actions->buryJob($job, $e->getMessage());
+            $this->actions->buryJob($job, $e->getMessage(), $this->timeToRetry);
         }
     }
 

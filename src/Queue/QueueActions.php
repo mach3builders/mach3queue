@@ -7,7 +7,7 @@ use Mach3queue\Action\ReserveJob;
 use Mach3queue\Job\Job;
 
 /**
- * @method addJob(string $queue, string $payload, int $delay, int $priority, int $time_to_retry): Job
+ * @method addJob(string $queue, string $payload, int $delay, int $priority): Job
  * @method reserveJob(Job $job)
  */
 class QueueActions
