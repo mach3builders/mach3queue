@@ -31,6 +31,10 @@ class Worker
                 continue;
             }
 
+            if ($this->should_quit) {
+                return self::$EXIT_ERROR;
+            }
+
             $job = $this->queue->getNextJob();
 
             if ($stop = $this->checkIfShouldStop($job)) {
