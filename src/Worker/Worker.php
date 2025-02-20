@@ -108,7 +108,7 @@ class Worker
     private function handleStop(int $stop, ?Job $job): void
     {
         match ($stop) {
-            self::$EXIT_ERROR => null,
+            self::$EXIT_ERROR,
             self::$EXIT_MEMORY_LIMIT => $this->actions->jobMemoryExceeded(
                 $job,
                 $this->timeToRetry
