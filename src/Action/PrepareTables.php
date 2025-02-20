@@ -60,7 +60,7 @@ class PrepareTables
             $table->string('status')->nullable();
             $table->string('supervisors')->nullable();
             $table->string('processes')->nullable();
-            $table->string('options')->nullable();
+            $table->json('options')->nullable();
             $table->timestamps();
         });
     }
