@@ -13,7 +13,7 @@
         "ext-pcntl": "*",
         "ext-posix": "*",
         "ext-dom": "*",
-        "opis/closure": "^4.3"
+        "opis/closure": "^3.6"
     },
     "require-dev": {
         "pestphp/pest": "^2.33",
