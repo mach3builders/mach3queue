@@ -15,7 +15,7 @@ use Mach3queue\Action\JobMemoryExceeded;
  * @method killWorker()
  * @method runJob(Job $job)
  * @method completeJob(Job $job)
- * @method buryJob(Job $job, string $message, int $time_to_retry)
+ * @method buryJob(Job $job, string $message, int $time_to_retry, int $max_retries)
  * @method jobMemoryExceeded(Job|null $job, int $time_to_retry)
  */
 class WorkerActions

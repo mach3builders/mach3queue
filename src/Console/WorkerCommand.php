@@ -44,21 +44,18 @@ class WorkerCommand extends Command
             'options' => new WorkerOptions(
                 stop_when_empty: $input->getOption('stop-when-empty'),
                 memory: $input->getOption('memory') ?? 128,
+                time_to_retry: $input->getOption('time-to-retry') ?? 60,
+                max_retries: $input->getOption('max-retries') ?? 3
             ),
-            'timeToRetry' => $input->getOption('time-to-retry') ?? 60,
         ];
     }
 
     private function createQueue(InputInterface $input): Queue
     {
-        $queues = GetQueueNamesFromConsole::get($input);
-        $retries = $input->getOption('max-retries') ?? 3;
-        $timeout = $input->getOption('timeout') ?? 60;
-
         return QueueManager::manager()
             ->getInstance()
-            ->setMaxRetries($retries)
-            ->setTimeout($timeout)
-            ->pipelines($queues);
+            ->setMaxRetries($input->getOption('max-retries') ?? 3)
+            ->setTimeout($input->getOption('timeout') ?? 60)
+            ->pipelines(GetQueueNamesFromConsole::get($input));
     }
 }

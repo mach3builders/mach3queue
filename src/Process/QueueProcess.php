@@ -12,7 +12,7 @@ class QueueProcess
 
     public Closure $output;
 
-    public function __construct(Process $process, Closure $output = null)
+    public function __construct(Process $process, ?Closure $output = null)
     {
         $this->process = $process;
         $this->output = $output ?: fn() => null;

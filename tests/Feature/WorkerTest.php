@@ -1,5 +1,6 @@
 <?php
 
+use Mach3queue\Action\BuryJob;
 use Mach3queue\Action\KillWorker;
 use Mach3queue\Job\Job;
 use Mach3queue\Job\Status;
@@ -119,7 +120,7 @@ describe('Worker', function () {
         expect($job->refresh()->status())->toBe(Status::FAILED);
     });
 
-    test('can call callable after job', function () {
+    test('can call callable after job when finished', function () {
         // setup
         Queue::addJob(new FakeEmptyQueueable)
             ->after(function (Job $job) {
@@ -136,6 +137,24 @@ describe('Worker', function () {
         $worker->run();
 
         // assert
+        expect(Job::first()->message)->toBe('after called successfully');
+    });
+
+    test('will run after callable only when max attempts when failed', function () {
+        $job = Queue::addJob(new FakeEmptyQueueable)
+            ->after(function (Job $job) {
+                $job->message = 'after called successfully';
+                $job->save();
+            });
+        $job->attempts = 2;
+        $job->save();
+
+        (new BuryJob)($job, 'failed', 0, 3);
+
+        expect(Job::first()->message)->not->toBe('after called successfully');
+
+        (new BuryJob)($job, 'failed', 0, 2);
+
         expect(Job::first()->message)->toBe('after called successfully');
     });
 });

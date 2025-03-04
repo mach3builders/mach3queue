@@ -12,21 +12,26 @@ class BuryJob
     private Job $job;
     private mixed $payload;
     private string $message;
-
     private int $time_to_retry;
+    private int $max_retries;
 
-    public function __invoke(Job $job, string $message, int $time_to_retry): void
-    {
+    public function __invoke(
+        Job $job,
+        string $message,
+        int $time_to_retry,
+        ?int $max_retries = 0
+    ): void {
         $this->job = $job;
         $this->payload = unserialize($job->payload);
         $this->message = $message;
         $this->time_to_retry = $time_to_retry;
+        $this->max_retries = $max_retries;
         $after = $job->callback ? unserialize($job->callback) : null;
 
         $this->buryJob();
         $this->echoBuriedJob();
 
-        if (is_callable($after)) {
+        if ($this->shouldHandleAfter($after)) {
             ($after)($this->job);
         }
     }
@@ -54,5 +59,10 @@ class BuryJob
 
         echo "\033[31m$time [$pid] buried   job: [$id] $class\033[0m".PHP_EOL;
         echo "\033[31m$time [$pid] message: $this->message\033[0m".PHP_EOL;
+    }
+
+    private function shouldHandleAfter($after): bool
+    {
+        return $this->job->attempts >= $this->max_retries && is_callable($after);
     }
 }

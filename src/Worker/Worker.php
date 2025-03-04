@@ -17,9 +17,7 @@ class Worker
         private readonly int $timeout = 60,
         private readonly WorkerActions $actions = new WorkerActions,
         private readonly WorkerOptions $options = new WorkerOptions,
-        private readonly int $timeToRetry = 60
-    ) {
-    }
+    ) {}
 
     public function run(): int
     {
@@ -48,13 +46,13 @@ class Worker
             }
 
             $this->registerTimeoutHandlerForJob(function() use ($job) {
-                $this->actions->timeoutJob($job, $this->timeToRetry);
+                $this->actions->timeoutJob($job, $this->options->time_to_retry);
                 $this->actions->killWorker();
             });
             
             $this->runJob($job);
             $this->resetTimeoutHandler();
-            sleep(1);
+            usleep(1000);
         }
     }
 
@@ -116,7 +114,7 @@ class Worker
             self::$EXIT_ERROR,
             self::$EXIT_MEMORY_LIMIT => $this->actions->jobMemoryExceeded(
                 $job,
-                $this->timeToRetry
+                $this->options->time_to_retry
             ),
         };
     }
@@ -132,7 +130,12 @@ class Worker
             $this->actions->runJob($job);
             $this->actions->completeJob($job);
         } catch(\Throwable $e) {
-            $this->actions->buryJob($job, $e->getMessage(), $this->timeToRetry);
+            $this->actions->buryJob(
+                $job,
+                $e->getMessage(),
+                $this->options->time_to_retry,
+                $this->options->max_retries
+            );
         }
     }
 
