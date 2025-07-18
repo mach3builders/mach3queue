@@ -57,7 +57,7 @@ class Job extends Model
 
     public function scopeSendBeforeNow(Builder $query): void
     {
-        $query->where('send_dt', '<=', CarbonImmutable::now());
+        $query->where('send_dt', '<=', CarbonImmutable::now()->subSeconds(1));
     }
 
     public function scopeIsNotBuried(Builder $query): void

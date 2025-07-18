@@ -11,7 +11,7 @@ class ReserveJob
     {
         $job->is_reserved = 1;
         $job->reserved_dt = Carbon::now();
-        $job->attempts = $job->attempts + 1;
+        ++$job->attempts;
         $job->save();
     }
 }
