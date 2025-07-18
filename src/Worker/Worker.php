@@ -52,8 +52,6 @@ class Worker
             
             $this->runJob($job);
             $this->resetTimeoutHandler();
-            // 500 ms sleep
-            usleep(500000);
         }
     }
 
