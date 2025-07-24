@@ -1,7 +1,9 @@
 <?php
 
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Carbon;
 use Mach3queue\Action\BuryJob;
+use Mach3queue\Action\ReserveJob;
 use Mach3queue\Queue\FakeEmptyQueueable;
 use Mach3queue\Queue\QueueManager as Queue;
 
@@ -86,13 +88,13 @@ describe('Queue', function () {
         // setup
         Queue::manager()->getInstance()->maxRetries = 3;
         $job = Queue::addJob(new FakeEmptyQueueable);
-        $job->attempts = 3;
+        $job->attempts = 4;
         $job->time_to_retry_dt = CarbonImmutable::now()->subSecond();
         $job->save();
 
         expect(Queue::getNextJob())->toBeEmpty();
 
-        $job->attempts = 2;
+        $job->attempts = 3;
         $job->save();
 
         expect(Queue::getNextJob())->toBeObject();

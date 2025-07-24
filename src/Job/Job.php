@@ -113,7 +113,7 @@ class Job extends Model
     public function scopeTimeToRetryIsNow(Builder $query, int $maxRetries = 3): void
     {
         $query->where('attempts', '>', 0)
-            ->where('attempts', '<', $maxRetries)
+            ->where('attempts', '<=', $maxRetries)
             ->where('time_to_retry_dt', '<=', CarbonImmutable::now());
     }
 
