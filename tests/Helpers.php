@@ -51,11 +51,12 @@ function trimOptions(): array
     ];
 }
 
-function supervisorOptions(): SupervisorOptions
+function supervisorOptions(array $queues = ['default']): SupervisorOptions
 {
     WorkerCommandString::$command = 'exec '.PHP_BINARY.' worker.php';
 
     return new SupervisorOptions(
+        queues: $queues,
         maxProcesses: 5,
         minProcesses: 2,
         directory: realpath(__DIR__.'/../'),

@@ -7,6 +7,7 @@ use Mach3queue\Dashboard\Dashboard;
 use Mach3queue\Supervisor\Supervisor;
 use Mach3queue\Queue\FakeEmptyQueueable;
 use Mach3queue\Supervisor\MasterSupervisor;
+use Mach3queue\Queue\QueueManager as Queue;
 
 describe('Dashboard', function () {
 
@@ -29,6 +30,28 @@ describe('Dashboard', function () {
             ->and($data->failedJobs)->toBe(0)
             ->and($data->pendingJobs)->toBe(5)
             ->and($data->queues[0]->count)->toBe(5);
+    });
+
+    test('can get queue workload for multiple queues', function () {
+        // setup
+        $master = new MasterSupervisor([...trimOptions()]);
+        $supervisor = new Supervisor(supervisorOptions(queues: ['default', 'emails']));
+
+        Queue::on('default')->addJob(new FakeEmptyQueueable);
+        Queue::on('default')->addJob(new FakeEmptyQueueable);
+        Queue::on('emails')->addJob(new FakeEmptyQueueable);
+
+        // run
+        $master->loop();
+        $supervisor->loop();
+
+        // assert
+        $data = json_decode(Dashboard::parse(['data' => 'dashboard']));
+        $queues = collect($data->queues)->keyBy('name');
+
+        expect($queues)->toHaveCount(2)
+            ->and($queues['default']->count)->toBe(2)
+            ->and($queues['emails']->count)->toBe(1);
     });
 
     test('can get pending jobs', function () {

@@ -80,7 +80,7 @@ class DashboardData
             $queues = explode(',', $supervisor->options->queues);
 
             foreach ($queues as $queue) {
-                if (! array_key_exists($queue, $queues)) {
+                if (! array_key_exists($queue, $queues_workload)) {
                     $queues_workload[$queue] = ['name' => $queue, 'count' => 0];
                 }
 
