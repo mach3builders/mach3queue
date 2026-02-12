@@ -7,19 +7,20 @@ export function data(endpoint) {
     const data = ref({})
 
     async function fetchData() {
-        console.log(endpoint)
         if (import.meta.env.DEV) {
             data.value = fake(endpoint)
             return
         }
 
-        const response = await axios.get('?data='+endpoint)
+        const params = new URLSearchParams(window.location.search)
+        params.set('data', endpoint)
+        const response = await axios.get('?' + params.toString())
         data.value = response.data
     }
 
     onMounted(() => {
         fetchData()
-        interval = setInterval(fetchData,3000)
+        interval = setInterval(fetchData, 3000)
     })
 
     onUnmounted(() => clearInterval(interval))
