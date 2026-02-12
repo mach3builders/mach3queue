@@ -77,7 +77,11 @@ class Queue
     public function getNextJob(): ?Job
     {
         $job = null;
-        
+
+        if (Database::connection()->getDriverName() !== 'sqlite') {
+            Database::reconnect();
+        }
+
         Database::beginTransaction();
 
         try {
