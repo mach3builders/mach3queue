@@ -22,7 +22,7 @@ readonly class Console
 
         match ($this->method($argv)) {
             'start' => (new QueueCommand($this->config))->run($input, $output),
-            'worker' => (new WorkerCommand())->run($input, $output),
+            'worker' => (new WorkerCommand($this->config))->run($input, $output),
             'supervisor' => (new SupervisorCommand())->run($input, $output),
             'install' => (new InstallCommand)->run($input, $output),
             'publish' => (new PublishCommand)->run($input, $output),

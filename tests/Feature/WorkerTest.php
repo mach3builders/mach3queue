@@ -157,4 +157,60 @@ describe('Worker', function () {
 
         expect(Job::first()->message)->toBe('after called successfully');
     });
+
+    test('does not crash when after callback throws during bury', function () {
+        $job = Queue::addJob(new FakeEmptyQueueable)
+            ->after(function (Job $job) {
+                throw new \RuntimeException('callback failed');
+            });
+        $job->attempts = 3;
+        $job->save();
+
+        (new BuryJob)($job, 'failed', 0, 3);
+
+        expect($job->refresh()->is_buried)->toBe(1);
+    });
+
+    test('does not crash when after callback throws during complete', function () {
+        $job = Queue::addJob(new FakeEmptyQueueable)
+            ->after(function (Job $job) {
+                throw new \RuntimeException('callback failed');
+            });
+
+        (new \Mach3queue\Action\CompleteJob)($job);
+
+        expect($job->refresh()->is_complete)->toBe(1);
+    });
+
+    test('calls before_job callback before each job', function () {
+        $job = addFakeJobToQueue();
+        $called = false;
+
+        $queue = $this->queue->getInstance();
+        $worker = new Worker($queue);
+        $worker->beforeJob(function (Job $job) use (&$called) {
+            $called = true;
+        });
+
+        $runJob = new \ReflectionMethod($worker, 'runJob');
+        $runJob->invoke($worker, $job);
+
+        expect($called)->toBeTrue();
+    });
+
+    test('before_job callback receives the job', function () {
+        $addedJob = addFakeJobToQueue();
+        $receivedJobId = null;
+
+        $queue = $this->queue->getInstance();
+        $worker = new Worker($queue);
+        $worker->beforeJob(function (Job $job) use (&$receivedJobId) {
+            $receivedJobId = $job->id;
+        });
+
+        $runJob = new \ReflectionMethod($worker, 'runJob');
+        $runJob->invoke($worker, $addedJob);
+
+        expect($receivedJobId)->toBe($addedJob->id);
+    });
 });

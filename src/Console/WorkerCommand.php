@@ -16,6 +16,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class WorkerCommand extends Command
 {
+    private array $config;
+
+    public function __construct(array $config = [])
+    {
+        $this->config = $config;
+
+        parent::__construct();
+    }
+
     protected function configure(): void
     {
         $this->setDefinition(
@@ -32,7 +41,13 @@ class WorkerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        return (new Worker(...$this->workerParams($input)))->run();
+        $worker = new Worker(...$this->workerParams($input));
+
+        if (isset($this->config['before_job']) && is_callable($this->config['before_job'])) {
+            $worker->beforeJob($this->config['before_job']);
+        }
+
+        return $worker->run();
     }
 
     private function workerParams(InputInterface $input): array

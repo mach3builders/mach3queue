@@ -22,7 +22,11 @@ class CompleteJob
         $this->printFinishedJob();
 
         if (is_callable($after)) {
-            ($after)($this->job);
+            try {
+                ($after)($this->job);
+            } catch (\Throwable $e) {
+                echo "\033[31m".date('Y-m-d H:i:s')." [".getmypid()."] after callback failed: {$e->getMessage()}\033[0m".PHP_EOL;
+            }
         }
     }
 

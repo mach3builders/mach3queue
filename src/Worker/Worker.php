@@ -11,6 +11,7 @@ class Worker
     public static int $EXIT_MEMORY_LIMIT = 12;
     public bool $should_quit = false;
     public bool $working = true;
+    private ?\Closure $beforeJobCallback = null;
 
     public function __construct(
         private readonly Queue $queue,
@@ -97,6 +98,11 @@ class Worker
         $this->working = true;
     }
 
+    public function beforeJob(callable $callback): void
+    {
+        $this->beforeJobCallback = $callback;
+    }
+
     private function checkIfShouldStop(?Job $job = null): int
     {
         return match (true) {
@@ -125,6 +131,10 @@ class Worker
 
     private function runJob(Job $job): void
     {
+        if ($this->beforeJobCallback) {
+            ($this->beforeJobCallback)($job);
+        }
+
         try {
             $this->actions->runJob($job);
             $this->actions->completeJob($job);

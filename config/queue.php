@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Before Job Callback
+    |--------------------------------------------------------------------------
+    |
+    | This callback runs before each job is processed. Use it to reconnect
+    | stale database connections or perform other setup that long-running
+    | workers need between jobs.
+    |
+    */
+
+    'before_job' => null,
+
+    /*
+    |--------------------------------------------------------------------------
     | Job Trimming Times
     |--------------------------------------------------------------------------
     |
