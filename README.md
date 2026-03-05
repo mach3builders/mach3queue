@@ -127,6 +127,28 @@ Status::PENDING;
 Status::UNKNOWN;
 ```
 
+### Before job hook
+
+Long-running workers can experience stale database connections (e.g. `MySQL server has gone away`).
+The `before_job` config option lets you run a callback before each job to reconnect or do other setup.
+
+In your `queue.php` config:
+
+```php
+'before_job' => function () {
+    // Reconnect your application's own database connection
+    YourApp\Database::reconnect();
+},
+```
+
+The callback receives the `Job` instance if you need to inspect it:
+
+```php
+'before_job' => function (\Mach3queue\Job\Job $job) {
+    Log::info("About to process job {$job->id} on queue {$job->queue}");
+},
+```
+
 ## Dashboard
 The package comes with a dashboard to monitor the queue.
 To view it you can get the html from it through the following code:
