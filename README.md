@@ -149,6 +149,12 @@ The callback receives the `Job` instance if you need to inspect it:
 },
 ```
 
+The same callback doubles as the connection refresher. A job that runs longer
+than your database's `wait_timeout` leaves the application's connection dead by
+the time its `->after()` callback runs. When that callback fails on a lost
+connection, the queue calls `before_job` and retries the callback once. Any
+other exception is logged and the worker moves on.
+
 ## Dashboard
 The package comes with a dashboard to monitor the queue.
 To view it you can get the html from it through the following code:

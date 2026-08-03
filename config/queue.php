@@ -24,6 +24,10 @@ return [
     | stale database connections or perform other setup that long-running
     | workers need between jobs.
     |
+    | It also runs when a job's after-callback fails on a connection that
+    | went away while the job was running, so the after-callback can be
+    | retried on a fresh connection.
+    |
     */
 
     'before_job' => null,

@@ -7,6 +7,7 @@ use Mach3queue\Job\Status;
 use Mach3queue\Queue\FakeEmptyQueueable;
 use Mach3queue\Queue\FakeSleepQueueable;
 use Mach3queue\Queue\QueueManager as Queue;
+use Mach3queue\Support\Connections;
 use Mach3queue\Worker\Worker;
 use Mach3queue\Worker\WorkerActions;
 use Mach3queue\Worker\WorkerOptions;
@@ -182,6 +183,75 @@ describe('Worker', function () {
         $job = Queue::addJob(new FakeEmptyQueueable)
             ->after(function (Job $job) {
                 throw new \RuntimeException('callback failed');
+            });
+
+        (new \Mach3queue\Action\CompleteJob)($job);
+
+        expect($job->refresh()->is_complete)->toBe(1);
+    });
+
+    test('retries the after callback once when the connection went away during complete', function () {
+        unset($_SESSION['after_attempts'], $_SESSION['after_finished']);
+        $refreshed = 0;
+        Connections::refreshUsing(function () use (&$refreshed) {
+            $refreshed++;
+        });
+
+        $job = Queue::addJob(new FakeEmptyQueueable)
+            ->after(function (Job $job) {
+                $_SESSION['after_attempts'] = ($_SESSION['after_attempts'] ?? 0) + 1;
+
+                if ($_SESSION['after_attempts'] === 1) {
+                    throw new PDOException(
+                        'SQLSTATE[HY000]: General error: 2006 MySQL server has gone away'
+                    );
+                }
+
+                $_SESSION['after_finished'] = true;
+            });
+
+        (new \Mach3queue\Action\CompleteJob)($job);
+
+        expect($_SESSION['after_attempts'])->toBe(2)
+            ->and($_SESSION['after_finished'] ?? false)->toBeTrue()
+            ->and($refreshed)->toBe(1);
+    });
+
+    test('retries the after callback once when the connection went away during bury', function () {
+        unset($_SESSION['after_attempts'], $_SESSION['after_finished']);
+        $refreshed = 0;
+        Connections::refreshUsing(function () use (&$refreshed) {
+            $refreshed++;
+        });
+
+        $job = Queue::addJob(new FakeEmptyQueueable)
+            ->after(function (Job $job) {
+                $_SESSION['after_attempts'] = ($_SESSION['after_attempts'] ?? 0) + 1;
+
+                if ($_SESSION['after_attempts'] === 1) {
+                    throw new PDOException(
+                        'SQLSTATE[HY000]: General error: 2006 MySQL server has gone away'
+                    );
+                }
+
+                $_SESSION['after_finished'] = true;
+            });
+
+        (new BuryJob)($job, 'connection died', 0, 0);
+
+        expect($_SESSION['after_attempts'])->toBe(2)
+            ->and($_SESSION['after_finished'] ?? false)->toBeTrue()
+            ->and($refreshed)->toBe(1);
+    });
+
+    test('does not crash when the after callback keeps losing the connection', function () {
+        Connections::refreshUsing(fn () => null);
+
+        $job = Queue::addJob(new FakeEmptyQueueable)
+            ->after(function (Job $job) {
+                throw new PDOException(
+                    'SQLSTATE[HY000]: General error: 2006 MySQL server has gone away'
+                );
             });
 
         (new \Mach3queue\Action\CompleteJob)($job);
