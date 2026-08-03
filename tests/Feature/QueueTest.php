@@ -21,6 +21,7 @@ describe('Queue', function () {
     test('can get next job', function () {
         // setup
         addFakeJobToQueue();
+        advancePastSendGuard();
 
         // assert
         expect(Queue::getNextJob())->not->toBeEmpty();
@@ -41,6 +42,7 @@ describe('Queue', function () {
         // setup
         Queue::on('queue_1')->addJob(new FakeEmptyQueueable);
         Queue::on('queue_2')->addJob(new FakeEmptyQueueable);
+        advancePastSendGuard();
 
         // assert
         expect(Queue::on('queue_1')->getNextJob()->queue)->toBe('queue_1')
@@ -52,6 +54,7 @@ describe('Queue', function () {
         Queue::on('queue_1')->addJob(new FakeEmptyQueueable);
         Queue::on('queue_2')->addJob(new FakeEmptyQueueable);
         Queue::pipelines(['queue_1', 'queue_2']);
+        advancePastSendGuard();
 
         // assert
         expect(Queue::getNextJob()->queue)->toBe('queue_1')
@@ -63,6 +66,7 @@ describe('Queue', function () {
         $job_1 = Queue::addJob(new FakeEmptyQueueable, 0, 30);
         $job_2 = Queue::addJob(new FakeEmptyQueueable, 0, 20);
         $job_3 = Queue::addJob(new FakeEmptyQueueable, 0, 10);
+        advancePastSendGuard();
 
         // assert
         expect($job_3->id)->toBe(Queue::getNextJob()->id)
@@ -91,6 +95,7 @@ describe('Queue', function () {
         $job->attempts = 4;
         $job->time_to_retry_dt = CarbonImmutable::now()->subSecond();
         $job->save();
+        advancePastSendGuard();
 
         expect(Queue::getNextJob())->toBeEmpty();
 
@@ -107,6 +112,7 @@ describe('Queue', function () {
         $job->buried_dt = CarbonImmutable::now();
         $job->is_buried = true;
         $job->save();
+        advancePastSendGuard();
 
         expect(Queue::getNextJob())->toBeObject();
     });

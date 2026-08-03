@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Carbon;
 use Mach3queue\Action\PrepareTables;
 use Mach3queue\Queue\QueueManager as Queue;
 use Tests\TestCase;
@@ -16,6 +18,12 @@ use Tests\TestCase;
 */
 
 uses(TestCase::class)->beforeEach(function () {
+    // advanceTimeBy*() freezes the clock and nothing resets it, so without
+    // this a test that moves time forward leaks that offset into every test
+    // that runs after it.
+    CarbonImmutable::setTestNow(null);
+    Carbon::setTestNow(null);
+
     $this->queue = new Queue;
     $this->queue->setConnection([
         'driver' => 'sqlite',
