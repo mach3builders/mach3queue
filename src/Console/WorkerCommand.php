@@ -5,6 +5,7 @@ namespace Mach3queue\Console;
 use Mach3queue\Queue\Queue;
 use Mach3queue\Worker\Worker;
 use Mach3queue\Queue\QueueManager;
+use Mach3queue\Support\Connections;
 use Mach3queue\Worker\WorkerActions;
 use Mach3queue\Worker\WorkerOptions;
 use Symfony\Component\Console\Command\Command;
@@ -45,6 +46,10 @@ class WorkerCommand extends Command
 
         if (isset($this->config['before_job']) && is_callable($this->config['before_job'])) {
             $worker->beforeJob($this->config['before_job']);
+
+            // The same callback refreshes the application's connections when one
+            // of them turns out to be dead halfway through an after-callback.
+            Connections::refreshUsing($this->config['before_job']);
         }
 
         return $worker->run();

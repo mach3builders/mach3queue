@@ -5,6 +5,7 @@ namespace Mach3queue\Action;
 use Mach3queue\Stopwatch;
 use Illuminate\Support\Carbon;
 use Mach3queue\Job\Job;
+use Mach3queue\Support\Connections;
 use function Opis\Closure\{unserialize};
 
 class BuryJob
@@ -33,7 +34,7 @@ class BuryJob
 
         if ($this->shouldHandleAfter($after)) {
             try {
-                ($after)($this->job);
+                Connections::retrying(fn () => ($after)($this->job));
             } catch (\Throwable $e) {
                 echo "\033[31m".date('Y-m-d H:i:s')." [".getmypid()."] after callback failed: {$e->getMessage()}\033[0m".PHP_EOL;
             }

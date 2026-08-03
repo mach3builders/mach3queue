@@ -4,6 +4,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Carbon;
 use Mach3queue\Action\PrepareTables;
 use Mach3queue\Queue\QueueManager as Queue;
+use Mach3queue\Support\Connections;
 use Tests\TestCase;
 
 /*
@@ -23,6 +24,10 @@ uses(TestCase::class)->beforeEach(function () {
     // that runs after it.
     CarbonImmutable::setTestNow(null);
     Carbon::setTestNow(null);
+
+    // Connections holds the refresh callback statically, so a test that
+    // registers one would otherwise hand it to every test after it.
+    Connections::forgetRefresh();
 
     $this->queue = new Queue;
     $this->queue->setConnection([
