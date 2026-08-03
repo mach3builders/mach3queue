@@ -3,6 +3,7 @@
 use Mach3queue\Job\Job;
 use Mockery\MockInterface;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Carbon;
 use Mockery\LegacyMockInterface;
 use Symfony\Component\Process\Process;
 use Mach3queue\Queue\FakeEmptyQueueable;
@@ -20,12 +21,28 @@ $default_supervisor_config = [
 
 function advanceTimeByMinutes(int $minutes): void
 {
-    CarbonImmutable::setTestNow(CarbonImmutable::now()->addMinutes($minutes));
+    advanceTimeBySeconds($minutes * 60);
 }
 
 function advanceTimeBySeconds(int $seconds): void
 {
-    CarbonImmutable::setTestNow(CarbonImmutable::now()->addSeconds($seconds));
+    $target = CarbonImmutable::now()->addSeconds($seconds);
+
+    // The queue writes timestamps with Illuminate\Support\Carbon and reads
+    // them back with Carbon\CarbonImmutable. Carbon 2 keeps a separate test
+    // now per class, so setting only one leaves the two clocks disagreeing;
+    // Carbon 3 shares it. Set both so the suite behaves the same on either.
+    CarbonImmutable::setTestNow($target);
+    Carbon::setTestNow($target);
+}
+
+/**
+ * Move past the one second guard in Job::scopeSendBeforeNow so a freshly
+ * added job becomes reservable.
+ */
+function advancePastSendGuard(): void
+{
+    advanceTimeBySeconds(2);
 }
 
 function createCompletedJobAtTime(CarbonImmutable $time): void

@@ -17,6 +17,7 @@ describe('Worker', function () {
     test('can timeout', function () {
         $job_timer = 3;
         Queue::addJob(new FakeSleepQueueable($job_timer));
+        advancePastSendGuard();
         $_SESSION["start_time"] = time();
         $action = Mockery::mock(KillWorker::class);
         $worker = new Worker(
@@ -41,6 +42,7 @@ describe('Worker', function () {
     test('can mark job as complete', function () {
         // setup
         addFakeJobToQueue();
+        advancePastSendGuard();
         $queue = $this->queue->getInstance();
         $actions = new WorkerActions;
         $options = new WorkerOptions(stop_when_empty: true);
@@ -109,6 +111,7 @@ describe('Worker', function () {
         // setup
         $queue = $this->queue->getInstance();
         $job = addFakeJobToQueue();
+        advancePastSendGuard();
         $actions = new WorkerActions(runJob: new RunJobWithException);
         $options = new WorkerOptions(stop_when_empty: true);
         $worker = new Worker($queue, 60, $actions, $options);
@@ -127,6 +130,10 @@ describe('Worker', function () {
                 $job->message = 'after called successfully';
                 $job->save();
             });
+
+        // The guard window is what gives the after() call above time to land
+        // before a worker can reserve the job.
+        advancePastSendGuard();
 
         $queue = $this->queue->getInstance();
         $actions = new WorkerActions;
