@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 1.4.0 - 2026-08-03
+
+### Added
+- **`Mach3queue\Support\Connections`** — Runs a callback, and when it fails on a connection that went away, refreshes the connections and retries it once. Lost connections are detected with Illuminate's `DetectsLostConnections`.
 
 ### Fixed
 - **A dead application connection no longer fails an `->after()` callback** — Workers outlive the connections their jobs use. When an `->after()` callback failed because its connection had gone away (`MySQL server has gone away`), the callback was skipped and the error only logged. The callback now gets one retry: the `before_job` callback runs to refresh the connections, then the callback is attempted again. Only lost-connection failures are retried; every other exception is logged as before.
